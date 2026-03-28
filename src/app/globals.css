@@ -1,22 +1,57 @@
 @import "tailwindcss";
 
+/* Class-based dark mode — add `.dark` to <html> to enable */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Typography */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Midnight Blue palette — deep navy for backgrounds and surfaces */
+  --color-midnight-50: #f0f3ff;
+  --color-midnight-100: #e3e8ff;
+  --color-midnight-200: #c4ceff;
+  --color-midnight-300: #9aaeff;
+  --color-midnight-400: #6a84ff;
+  --color-midnight-500: #4060f4;
+  --color-midnight-600: #2e4de0;
+  --color-midnight-700: #2239b8;
+  --color-midnight-800: #1c2e94;
+  --color-midnight-900: #182578;
+  --color-midnight-950: #0e1240;
+
+  /* Electric accent palette — vibrant indigo for interactive elements */
+  --color-electric-300: #a5b4fc;
+  --color-electric-400: #818cf8;
+  --color-electric-500: #6366f1;
+  --color-electric-600: #4f46e5;
+  --color-electric-700: #4338ca;
+
+  /* Border-radius tokens (squircles) */
+  --radius-squircle: 0.75rem;
+  --radius-squircle-lg: 1rem;
+
+  /* Shadow tokens — tinted soft shadows */
+  --shadow-soft: 0 4px 16px 0 color-mix(in srgb, var(--color-midnight-900) 10%, transparent);
+  --shadow-card: 0 8px 32px 0 color-mix(in srgb, var(--color-midnight-950) 15%, transparent);
+  --shadow-glow: 0 0 24px 0 color-mix(in srgb, var(--color-electric-500) 20%, transparent);
+}
+
+/* Semantic color tokens */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa; /* zinc-50 */
+  --foreground: #18181b; /* zinc-900 */
+}
+
+.dark {
+  --background: #0e1240; /* midnight-950 */
+  --foreground: #fafafa; /* zinc-50 */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
