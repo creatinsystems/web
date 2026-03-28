@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { toast } from 'sonner';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -11,23 +11,23 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function Home() {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
+    name: '',
+    email: '',
+    message: '',
   });
 
   const handleSubmit = () => {
-    toast.success("Message sent!", {
+    toast.success('Message sent!', {
       description: "We'll get back to you soon.",
     });
-    setFormData({ name: "", email: "", message: "" });
+    setFormData({ name: '', email: '', message: '' });
   };
 
   return (
@@ -57,14 +57,11 @@ export default function Home() {
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle>Card Title</CardTitle>
-              <CardDescription>
-                This is a card description to test the styling.
-              </CardDescription>
+              <CardDescription>This is a card description to test the styling.</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                This is the card content. It uses the muted foreground color for
-                secondary text.
+                This is the card content. It uses the muted foreground color for secondary text.
               </p>
             </CardContent>
             <CardFooter>
@@ -80,9 +77,7 @@ export default function Home() {
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle>Contact Form</CardTitle>
-              <CardDescription>
-                Test Input, Label, and Textarea components.
-              </CardDescription>
+              <CardDescription>Test Input, Label, and Textarea components.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -91,9 +86,7 @@ export default function Home() {
                   id="name"
                   placeholder="Enter your name"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name: e.target.value }))
-                  }
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
@@ -103,9 +96,7 @@ export default function Home() {
                   type="email"
                   placeholder="Enter your email"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, email: e.target.value }))
-                  }
+                  onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
