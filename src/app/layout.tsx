@@ -1,12 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { RegionBadge } from "@/components/layout/region-badge";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const satoshi = localFont({
+  src: [
+    {
+      path: "./fonts/Satoshi-Variable.woff2",
+      weight: "300 900",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Satoshi-VariableItalic.woff2",
+      weight: "300 900",
+      style: "italic",
+    },
+  ],
+  variable: "--font-satoshi",
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -25,10 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
-    >
+    <html lang="en" className={`${satoshi.variable} ${geistMono.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col">
         <RegionBadge />
         {children}
