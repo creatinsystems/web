@@ -7,7 +7,7 @@
 
 @theme {
   /* Typography */
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-satoshi);
   --font-mono: var(--font-geist-mono);
 
   /* Midnight Blue palette — deep navy for backgrounds and surfaces */
@@ -89,7 +89,6 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -121,8 +120,17 @@
   }
   body {
     @apply bg-background text-foreground;
+    letter-spacing: 0.01em;
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.02em;
   }
 }
