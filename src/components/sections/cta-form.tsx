@@ -1,5 +1,6 @@
 "use client";
 
+import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 
 import { tapVariant, hoverVariant } from "@/lib/motion";
@@ -9,7 +10,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+interface ContactFormData {
+  name: string;
+  email: string;
+  company: string;
+  headache: string;
+}
+
 function CtaForm() {
+  const { register, handleSubmit } = useForm<ContactFormData>({
+    defaultValues: {
+      name: "",
+      email: "",
+      company: "",
+      headache: "",
+    },
+  });
+
+  const onSubmit = (data: ContactFormData) => {
+    // TODO: wire to server action in #20
+    console.log(data);
+  };
+
   return (
     <MotionSection id="contact">
       <div className="mx-auto max-w-2xl space-y-8 text-center">
@@ -24,20 +46,24 @@ function CtaForm() {
           </p>
         </div>
 
-        <form onSubmit={(e) => e.preventDefault()} className="mx-auto max-w-md space-y-5 text-left">
+        <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-md space-y-5 text-left">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" placeholder="Jane Doe" required />
+            <Input id="name" placeholder="Jane Doe" {...register("name")} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Work Email</Label>
-            <Input id="email" type="email" placeholder="jane@company.com" required />
+            <Input id="email" type="email" placeholder="jane@company.com" {...register("email")} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="company">Company / URL</Label>
-            <Input id="company" placeholder="https://company.com (optional)" />
+            <Input
+              id="company"
+              placeholder="https://company.com (optional)"
+              {...register("company")}
+            />
           </div>
 
           <div className="space-y-2">
@@ -46,6 +72,7 @@ function CtaForm() {
               id="headache"
               placeholder="Tell us about the system or process that keeps you up at night..."
               className="min-h-28"
+              {...register("headache")}
             />
           </div>
 
