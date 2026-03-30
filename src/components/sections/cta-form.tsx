@@ -1,8 +1,10 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 
+import { contactSchema, type ContactFormData } from "@/lib/schemas/contact";
 import { tapVariant, hoverVariant } from "@/lib/motion";
 import { MotionSection } from "@/components/layout/motion-section";
 import { Button } from "@/components/ui/button";
@@ -10,15 +12,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-interface ContactFormData {
-  name: string;
-  email: string;
-  company: string;
-  headache: string;
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="text-sm text-destructive">{message}</p>;
 }
 
 function CtaForm() {
-  const { register, handleSubmit } = useForm<ContactFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -49,12 +54,25 @@ function CtaForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-md space-y-5 text-left">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" placeholder="Jane Doe" {...register("name")} />
+            <Input
+              id="name"
+              placeholder="Jane Doe"
+              aria-invalid={!!errors.name}
+              {...register("name")}
+            />
+            <FieldError message={errors.name?.message} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Work Email</Label>
-            <Input id="email" type="email" placeholder="jane@company.com" {...register("email")} />
+            <Input
+              id="email"
+              type="email"
+              placeholder="jane@company.com"
+              aria-invalid={!!errors.email}
+              {...register("email")}
+            />
+            <FieldError message={errors.email?.message} />
           </div>
 
           <div className="space-y-2">
@@ -72,8 +90,10 @@ function CtaForm() {
               id="headache"
               placeholder="Tell us about the system or process that keeps you up at night..."
               className="min-h-28"
+              aria-invalid={!!errors.headache}
               {...register("headache")}
             />
+            <FieldError message={errors.headache?.message} />
           </div>
 
           <motion.div whileTap={tapVariant} whileHover={hoverVariant}>
