@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { fadeInUp, tapVariant, hoverVariant } from "@/lib/motion";
 import { Container } from "@/components/layout/container";
 import { buttonVariants } from "@/components/ui/button";
+import { HeroVisual } from "@/components/visuals/hero-visual";
 import type { Region } from "@/lib/region";
 
 const subHeadlines: Record<Region, string> = {
@@ -42,18 +43,14 @@ function Hero({ region }: { region: Region }) {
           </div>
         </motion.div>
 
-        {/* Visual placeholder — Phase 3 */}
+        {/* 3D Visual */}
         <motion.div
           variants={fadeInUp}
           initial="hidden"
           animate="visible"
           className="flex items-center justify-center"
         >
-          <div className="flex aspect-square w-full max-w-md items-center justify-center rounded-xl bg-gradient-to-br from-midnight-900 to-electric-500/30 p-8">
-            <span className="text-center text-sm font-medium text-muted-foreground">
-              3D Visual &mdash; Phase 3
-            </span>
-          </div>
+          <HeroVisual />
         </motion.div>
       </Container>
     </section>
