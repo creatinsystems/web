@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { MotionSection } from "@/components/layout/motion-section";
+import { DashboardMockup } from "@/components/visuals/dashboard-mockup";
 import type { Region } from "@/lib/region";
 
 const caseStudyTitles: Record<Region, string> = {
@@ -50,13 +51,9 @@ function SocialProof({ region }: { region: Region }) {
             </p>
           </div>
 
-          {/* Dashboard mockup placeholder — Phase 3 */}
+          {/* Security dashboard mockup */}
           <div className="flex items-center justify-center">
-            <div className="flex aspect-video w-full items-center justify-center rounded-xl bg-gradient-to-br from-midnight-900 to-electric-500/30 p-8">
-              <span className="text-center text-sm font-medium text-muted-foreground">
-                Dashboard Mockup &mdash; Phase 3
-              </span>
-            </div>
+            <DashboardMockup />
           </div>
         </div>
       </div>
