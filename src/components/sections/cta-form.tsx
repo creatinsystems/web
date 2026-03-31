@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { track } from "@vercel/analytics";
 
 import { contactSchema, type ContactFormData } from "@/lib/schemas/contact";
 import { submitContact } from "@/actions/contact";
@@ -44,6 +45,7 @@ function CtaForm() {
     const result = await submitContact(data);
 
     if (result.success) {
+      track("form_submission", { form: "contact_audit" });
       toast.success("Audit Request Received. We'll be in touch shortly.");
       reset();
     } else {

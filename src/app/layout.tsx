@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "@/components/ui/sonner";
 import { MotionProvider } from "@/components/layout/motion-provider";
 import { RegionBadge } from "@/components/layout/region-badge";
@@ -95,6 +97,8 @@ export default function RootLayout({
           <Footer />
         </MotionProvider>
         <Toaster />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
