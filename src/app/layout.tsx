@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { MotionProvider } from "@/components/layout/motion-provider";
 import { RegionBadge } from "@/components/layout/region-badge";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -42,10 +43,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${satoshi.variable} ${geistMono.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col">
-        <RegionBadge />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <MotionProvider>
+          <RegionBadge />
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </MotionProvider>
         <Toaster />
       </body>
     </html>
