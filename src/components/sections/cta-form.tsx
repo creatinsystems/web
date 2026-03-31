@@ -3,8 +3,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { contactSchema, type ContactFormData } from "@/lib/schemas/contact";
+import { submitContact } from "@/actions/contact";
 import { tapVariant, hoverVariant } from "@/lib/motion";
 import { MotionSection } from "@/components/layout/motion-section";
 import { Button } from "@/components/ui/button";
@@ -21,7 +24,8 @@ function CtaForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState: { errors, isSubmitting },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -32,9 +36,15 @@ function CtaForm() {
     },
   });
 
-  const onSubmit = (data: ContactFormData) => {
-    // TODO: wire to server action in #20
-    console.log(data);
+  const onSubmit = async (data: ContactFormData) => {
+    const result = await submitContact(data);
+
+    if (result.success) {
+      toast.success("Audit Request Received. We'll be in touch shortly.");
+      reset();
+    } else {
+      toast.error(result.error);
+    }
   };
 
   return (
@@ -57,6 +67,7 @@ function CtaForm() {
             <Input
               id="name"
               placeholder="Jane Doe"
+              disabled={isSubmitting}
               aria-invalid={!!errors.name}
               {...register("name")}
             />
@@ -69,6 +80,7 @@ function CtaForm() {
               id="email"
               type="email"
               placeholder="jane@company.com"
+              disabled={isSubmitting}
               aria-invalid={!!errors.email}
               {...register("email")}
             />
@@ -80,6 +92,7 @@ function CtaForm() {
             <Input
               id="company"
               placeholder="https://company.com (optional)"
+              disabled={isSubmitting}
               {...register("company")}
             />
           </div>
@@ -90,15 +103,26 @@ function CtaForm() {
               id="headache"
               placeholder="Tell us about the system or process that keeps you up at night..."
               className="min-h-28"
+              disabled={isSubmitting}
               aria-invalid={!!errors.headache}
               {...register("headache")}
             />
             <FieldError message={errors.headache?.message} />
           </div>
 
-          <motion.div whileTap={tapVariant} whileHover={hoverVariant}>
-            <Button type="submit" className="w-full">
-              Request Free Audit
+          <motion.div
+            whileTap={isSubmitting ? undefined : tapVariant}
+            whileHover={isSubmitting ? undefined : hoverVariant}
+          >
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                "Request Free Audit"
+              )}
             </Button>
           </motion.div>
         </form>
