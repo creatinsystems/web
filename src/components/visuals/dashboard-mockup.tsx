@@ -101,7 +101,11 @@ function Sparkline() {
 
 function DashboardMockup() {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background shadow-card">
+    <div
+      className="relative overflow-hidden rounded-xl border border-border/60 bg-background shadow-card"
+      aria-hidden="true"
+      role="presentation"
+    >
       {/* Scaled container — looks like a miniature screenshot */}
       <div
         className="origin-top-left scale-[0.55] sm:scale-[0.6]"

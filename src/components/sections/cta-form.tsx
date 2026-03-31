@@ -15,9 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-function FieldError({ message }: { message?: string }) {
+function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
-  return <p className="text-sm text-destructive">{message}</p>;
+  return (
+    <p id={id} className="text-sm text-destructive" role="alert">
+      {message}
+    </p>
+  );
 }
 
 function CtaForm() {
@@ -69,9 +73,10 @@ function CtaForm() {
               placeholder="Jane Doe"
               disabled={isSubmitting}
               aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? "name-error" : undefined}
               {...register("name")}
             />
-            <FieldError message={errors.name?.message} />
+            <FieldError id="name-error" message={errors.name?.message} />
           </div>
 
           <div className="space-y-2">
@@ -82,9 +87,10 @@ function CtaForm() {
               placeholder="jane@company.com"
               disabled={isSubmitting}
               aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
               {...register("email")}
             />
-            <FieldError message={errors.email?.message} />
+            <FieldError id="email-error" message={errors.email?.message} />
           </div>
 
           <div className="space-y-2">
@@ -105,9 +111,10 @@ function CtaForm() {
               className="min-h-28"
               disabled={isSubmitting}
               aria-invalid={!!errors.headache}
+              aria-describedby={errors.headache ? "headache-error" : undefined}
               {...register("headache")}
             />
-            <FieldError message={errors.headache?.message} />
+            <FieldError id="headache-error" message={errors.headache?.message} />
           </div>
 
           <motion.div

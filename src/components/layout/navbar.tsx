@@ -27,7 +27,7 @@ function Navbar({ className, ...props }: React.ComponentProps<"header">) {
           Creatin Systems
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav aria-label="Main navigation" className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <a
               key={link.href}
