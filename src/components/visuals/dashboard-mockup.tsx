@@ -108,8 +108,8 @@ function DashboardMockup() {
         style={{ width: "182%", height: "182%" }}
       >
         <div className="flex min-h-[520px]">
-          {/* Sidebar */}
-          <div className="flex w-48 shrink-0 flex-col border-r border-border/40 bg-card px-3 py-4">
+          {/* Sidebar — hidden on mobile to save space */}
+          <div className="hidden w-48 shrink-0 flex-col border-r border-border/40 bg-card px-3 py-4 sm:flex">
             <div className="mb-4 px-2">
               <p className="text-xs font-semibold uppercase tracking-widest text-primary">SecOps</p>
             </div>
@@ -155,7 +155,7 @@ function DashboardMockup() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="grid grid-cols-4 gap-3"
+              className="grid grid-cols-2 gap-3 sm:grid-cols-4"
             >
               {metrics.map((m) => (
                 <motion.div key={m.label} variants={fadeInUp}>
@@ -178,9 +178,9 @@ function DashboardMockup() {
               ))}
             </motion.div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid gap-3 sm:grid-cols-3">
               {/* Activity timeline */}
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <Card className="p-0">
                   <CardHeader className="p-3 pb-2">
                     <CardTitle className="text-xs">Recent Activity</CardTitle>

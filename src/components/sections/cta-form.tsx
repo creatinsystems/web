@@ -114,7 +114,7 @@ function CtaForm() {
             whileTap={isSubmitting ? undefined : tapVariant}
             whileHover={isSubmitting ? undefined : hoverVariant}
           >
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button type="submit" className="min-h-11 w-full text-base" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="animate-spin" />

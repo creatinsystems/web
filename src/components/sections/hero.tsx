@@ -50,7 +50,7 @@ function Hero({ region }: { region: Region }) {
               href="#contact"
               whileTap={tapVariant}
               whileHover={hoverVariant}
-              className={cn(buttonVariants({ size: "lg" }), "text-base")}
+              className={cn(buttonVariants({ size: "lg" }), "min-h-11 px-6 text-base")}
             >
               Claim Free Infrastructure Audit
             </motion.a>
