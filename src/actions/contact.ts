@@ -1,8 +1,10 @@
 "use server";
 
+import { headers } from "next/headers";
 import { Resend } from "resend";
 
 import { contactSchema, type ContactFormData } from "@/lib/schemas/contact";
+import { rateLimit } from "@/lib/rate-limit";
 import { LeadNotification } from "@/emails/lead-notification";
 import { LeadConfirmation } from "@/emails/lead-confirmation";
 
@@ -14,6 +16,17 @@ const SENDER = "Creatin Systems <noreply@creatinsystems.com>";
 export type ContactResult = { success: true } | { success: false; error: string };
 
 export async function submitContact(data: ContactFormData): Promise<ContactResult> {
+  /* ── Rate limiting ──────────────────────────────────────── */
+  const headerStore = await headers();
+  const ip = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const { limited } = rateLimit(ip);
+  if (limited) {
+    return {
+      success: false,
+      error: "Too many requests. Please try again in a minute.",
+    };
+  }
+
   /* ── Server-side validation (never trust the client) ───── */
   const parsed = contactSchema.safeParse(data);
   if (!parsed.success) {
