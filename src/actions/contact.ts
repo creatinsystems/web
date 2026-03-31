@@ -42,31 +42,37 @@ export async function submitContact(data: ContactFormData): Promise<ContactResul
   });
 
   try {
-    /* ── Send lead notification to agency ──────────────────── */
-    const { error: notifError } = await resend.emails.send({
+    /* ── Start both emails concurrently ───────────────────── */
+    const notifPromise = resend.emails.send({
       from: SENDER,
       to: [AGENCY_EMAIL],
       subject: `New Lead: ${name} — ${email}`,
       react: LeadNotification({ name, email, company, headache, submittedAt }),
     });
 
-    if (notifError) {
-      console.error("Resend notification error:", notifError);
-      return { success: false, error: "Failed to send your request. Please try again." };
-    }
-
-    /* ── Send confirmation auto-reply to submitter ─────────── */
-    const { error: confirmError } = await resend.emails.send({
+    const confirmPromise = resend.emails.send({
       from: SENDER,
       to: [email],
       subject: "We received your audit request — Creatin Systems",
       react: LeadConfirmation({ name }),
     });
 
-    if (confirmError) {
-      // Non-critical: agency already got the lead, just log the error
-      console.error("Resend confirmation error:", confirmError);
+    /* ── Only await the critical agency notification ──────── */
+    const { error: notifError } = await notifPromise;
+
+    if (notifError) {
+      console.error("Resend notification error:", notifError);
+      return { success: false, error: "Failed to send your request. Please try again." };
     }
+
+    /* ── Fire-and-forget the auto-reply ───────────────────── */
+    confirmPromise
+      .then(({ error }) => {
+        if (error) console.error("Resend confirmation error:", error);
+      })
+      .catch((err) => {
+        console.error("Resend confirmation unexpected error:", err);
+      });
 
     return { success: true };
   } catch (err) {
