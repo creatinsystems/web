@@ -133,3 +133,10 @@
     letter-spacing: -0.02em;
   }
 }
+
+/* Respect reduced motion preference for CSS-driven animations */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

@@ -16,7 +16,7 @@ const HeroScene = dynamic(
 
 function HeroVisual() {
   return (
-    <div className="aspect-square w-full max-w-md">
+    <div className="aspect-square w-full max-w-md" aria-hidden="true" role="presentation">
       <HeroScene />
     </div>
   );
