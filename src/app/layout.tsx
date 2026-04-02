@@ -89,7 +89,7 @@ export default function RootLayout({
           >
             Skip to main content
           </a>
-          <RegionBadge />
+          {process.env.NODE_ENV === "development" && <RegionBadge />}
           <Navbar />
           <main id="main-content" className="flex-1">
             {children}

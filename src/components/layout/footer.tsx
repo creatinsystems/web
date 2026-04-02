@@ -1,5 +1,12 @@
+import { ExternalLinkIcon } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/layout/container";
+
+const socialLinks = [
+  { label: "LinkedIn", href: "https://linkedin.com/company/creatinsystems" },
+  { label: "GitHub", href: "https://github.com/creatinsystems" },
+] as const;
 
 function Footer({ className, ...props }: React.ComponentProps<"footer">) {
   return (
@@ -13,19 +20,19 @@ function Footer({ className, ...props }: React.ComponentProps<"footer">) {
           &copy; {new Date().getFullYear()} Creatin Systems. All rights reserved.
         </p>
 
-        <nav aria-label="Footer navigation" className="flex items-center gap-4">
-          <a
-            href="#"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Privacy
-          </a>
-          <a
-            href="#"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Terms
-          </a>
+        <nav aria-label="Social links" className="flex items-center gap-4">
+          {socialLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {link.label}
+              <ExternalLinkIcon className="size-3" />
+            </a>
+          ))}
         </nav>
       </Container>
     </footer>
