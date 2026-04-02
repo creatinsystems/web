@@ -1,19 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/layout/container";
 import { buttonVariants } from "@/components/ui/button";
+import { MobileNav } from "@/components/layout/mobile-nav";
 
 const navLinks = [
-  { label: "The Problem", href: "#problem" },
-  { label: "The Solution", href: "#solution" },
-  { label: "Case Study", href: "#case-study" },
+  { label: "Services", href: "#services" },
+  { label: "Case Studies", href: "#case-studies" },
+  { label: "About", href: "#about" },
   { label: "Contact", href: "#contact" },
 ] as const;
 
 function Navbar({ className, ...props }: React.ComponentProps<"header">) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <header
       className={cn(
@@ -39,12 +43,15 @@ function Navbar({ className, ...props }: React.ComponentProps<"header">) {
           ))}
         </nav>
 
-        <a
-          href="#contact"
-          className={cn(buttonVariants({ size: "sm" }), "hidden min-h-9 sm:inline-flex")}
-        >
-          Claim Free Infrastructure Audit
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href="#contact"
+            className={cn(buttonVariants({ size: "sm" }), "hidden min-h-9 sm:inline-flex")}
+          >
+            Claim Free Audit
+          </a>
+          <MobileNav links={navLinks} open={mobileOpen} onOpenChange={setMobileOpen} />
+        </div>
       </Container>
     </header>
   );
