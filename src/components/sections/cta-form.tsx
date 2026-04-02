@@ -54,9 +54,12 @@ function CtaForm() {
   };
 
   return (
-    <MotionSection id="contact">
+    <MotionSection id="contact" variant="accent">
       <div className="mx-auto max-w-2xl space-y-8 text-center">
         <div className="space-y-4">
+          <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+            Get Started
+          </p>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Stop Guessing. Start Scaling.
           </h2>
@@ -67,7 +70,10 @@ function CtaForm() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-md space-y-5 text-left">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mx-auto max-w-md space-y-5 rounded-xl border border-border/60 bg-card p-6 text-left shadow-card sm:p-8"
+        >
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input

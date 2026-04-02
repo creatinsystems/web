@@ -1,8 +1,8 @@
 import { getRegion } from "@/lib/region";
 import { Hero } from "@/components/sections/hero";
-import { Agitation } from "@/components/sections/agitation";
-import { Solution } from "@/components/sections/solution";
-import { SocialProof } from "@/components/sections/social-proof";
+import { Services } from "@/components/sections/services";
+import { CaseStudies } from "@/components/sections/case-studies";
+import { About } from "@/components/sections/about";
 import { CtaForm } from "@/components/sections/cta-form";
 
 const jsonLd = {
@@ -27,9 +27,9 @@ export default async function Home() {
         }}
       />
       <Hero region={region} />
-      <Agitation />
-      <Solution />
-      <SocialProof region={region} />
+      <Services />
+      <CaseStudies region={region} />
+      <About />
       <CtaForm />
     </>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import { fadeInUp } from "@/lib/motion";
@@ -11,21 +11,34 @@ interface MotionSectionProps {
   id?: string;
   className?: string;
   variant?: SectionVariant;
+  /** Override the default fadeInUp animation variant */
+  animation?: Variants;
   children?: React.ReactNode;
 }
 
 /**
- * Animated section wrapper — scroll-triggered fade-in via Framer Motion.
+ * Animated section wrapper — scroll-triggered entrance via Framer Motion.
  * Use this instead of `<Section>` when the section should animate on scroll.
  */
-function MotionSection({ className, variant = "default", children, ...props }: MotionSectionProps) {
+function MotionSection({
+  className,
+  variant = "default",
+  animation = fadeInUp,
+  children,
+  ...props
+}: MotionSectionProps) {
   return (
     <motion.section
-      variants={fadeInUp}
+      variants={animation}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
-      className={cn("py-16 sm:py-24", variant === "muted" && "bg-muted/50", className)}
+      className={cn(
+        "py-24 sm:py-32",
+        variant === "muted" && "bg-muted/50",
+        variant === "accent" && "bg-glow-accent",
+        className
+      )}
       {...props}
     >
       <Container>{children}</Container>

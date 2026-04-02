@@ -14,7 +14,7 @@ export default function Image() {
         justifyContent: "center",
         width: "100%",
         height: "100%",
-        background: "linear-gradient(135deg, #0e1240 0%, #182578 50%, #1e3a8a 100%)",
+        background: "linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #1a1a1a 100%)",
         color: "#fafafa",
         fontFamily: "sans-serif",
         padding: "60px 80px",
@@ -47,7 +47,7 @@ export default function Image() {
           style={{
             display: "flex",
             fontSize: 24,
-            color: "#9aaeff",
+            color: "#a1a1a1",
             textAlign: "center",
             maxWidth: "700px",
           }}
