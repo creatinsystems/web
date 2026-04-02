@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ShieldCheckIcon, CloudIcon, BarChart3Icon, type LucideIcon } from "lucide-react";
 
-import { fadeInUp, scaleIn, staggerContainer } from "@/lib/motion";
+import { scaleIn, staggerContainer } from "@/lib/motion";
 import { MotionSection } from "@/components/layout/motion-section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { DashboardMockup } from "@/components/visuals/dashboard-mockup";
