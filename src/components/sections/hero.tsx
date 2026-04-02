@@ -4,10 +4,10 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 import { cn } from "@/lib/utils";
-import { fadeInUp, tapVariant, hoverVariant } from "@/lib/motion";
+import { fadeInUp, fadeIn, tapVariant, hoverVariant } from "@/lib/motion";
 import { Container } from "@/components/layout/container";
 import { buttonVariants } from "@/components/ui/button";
-import { HeroVisual } from "@/components/visuals/hero-visual";
+import { DotGrid } from "@/components/visuals/dot-grid";
 import type { Region } from "@/lib/region";
 
 const subHeadlines: Record<Region, string> = {
@@ -22,50 +22,52 @@ function Hero({ region }: { region: Region }) {
     offset: ["start start", "end start"],
   });
 
-  const visualY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
-  const copyY = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
+  const copyY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
 
   return (
     <section
       ref={sectionRef}
       className="relative flex min-h-[calc(100vh-3.5rem)] items-center overflow-hidden"
     >
-      <Container className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-        {/* Copy */}
+      {/* Background: dot-grid + radial glow */}
+      <motion.div variants={fadeIn} initial="hidden" animate="visible" className="absolute inset-0">
+        <DotGrid />
+      </motion.div>
+
+      <Container className="relative z-10">
         <motion.div
           variants={fadeInUp}
           initial="hidden"
           animate="visible"
           style={{ y: copyY }}
-          className="flex flex-col justify-center gap-6"
+          className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center"
         >
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
             High-Velocity
             <br />
             Cloud Engineering.
           </h1>
-          <p className="max-w-lg text-lg text-muted-foreground">{subHeadlines[region]}</p>
-          <div>
+          <p className="max-w-xl text-lg text-muted-foreground sm:text-xl">
+            {subHeadlines[region]}
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
             <motion.a
               href="#contact"
               whileTap={tapVariant}
               whileHover={hoverVariant}
-              className={cn(buttonVariants({ size: "lg" }), "min-h-11 px-6 text-base")}
+              className={cn(buttonVariants({ size: "cta" }))}
             >
               Claim Free Infrastructure Audit
             </motion.a>
+            <motion.a
+              href="#services"
+              whileTap={tapVariant}
+              whileHover={hoverVariant}
+              className={cn(buttonVariants({ variant: "outline", size: "cta" }))}
+            >
+              See What We Build
+            </motion.a>
           </div>
-        </motion.div>
-
-        {/* 3D Visual — parallax drift */}
-        <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          animate="visible"
-          style={{ y: visualY }}
-          className="flex items-center justify-center"
-        >
-          <HeroVisual />
         </motion.div>
       </Container>
     </section>
