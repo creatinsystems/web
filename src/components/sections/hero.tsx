@@ -8,6 +8,8 @@ import { fadeInUp, fadeIn, tapVariant, hoverVariant } from "@/lib/motion";
 import { Container } from "@/components/layout/container";
 import { buttonVariants } from "@/components/ui/button";
 import { DotGrid } from "@/components/visuals/dot-grid";
+import { Grainient } from "@/components/visuals/grainient";
+import { GradientText } from "@/components/visuals/gradient-text";
 import type { Region } from "@/lib/region";
 
 const subHeadlines: Record<Region, string> = {
@@ -29,8 +31,9 @@ function Hero({ region }: { region: Region }) {
       ref={sectionRef}
       className="relative flex min-h-[calc(100vh-3.5rem)] items-center overflow-hidden"
     >
-      {/* Background: dot-grid + radial glow */}
+      {/* Background: grainient base + dot-grid overlay */}
       <motion.div variants={fadeIn} initial="hidden" animate="visible" className="absolute inset-0">
+        <Grainient className="absolute inset-0" />
         <DotGrid />
       </motion.div>
 
@@ -45,7 +48,7 @@ function Hero({ region }: { region: Region }) {
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
             High-Velocity
             <br />
-            Cloud Engineering.
+            <GradientText animationSpeed={6}>Cloud Engineering.</GradientText>
           </h1>
           <p className="max-w-xl text-lg text-muted-foreground sm:text-xl">
             {subHeadlines[region]}
