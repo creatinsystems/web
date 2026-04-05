@@ -43,7 +43,7 @@ interface GrainientProps {
   grainScale?: number;
   /** Animate grain per-frame (default false) */
   grainAnimated?: boolean;
-  /** Output contrast (default 1.5) */
+  /** Output contrast (default 1.2) */
   contrast?: number;
   /** Output gamma (default 1) */
   gamma?: number;
@@ -55,11 +55,11 @@ interface GrainientProps {
   centerY?: number;
   /** Zoom level (default 0.9) */
   zoom?: number;
-  /** Primary color hex (default "#261725" — dark plum) */
+  /** Primary color hex (default "#2a1855" — deep violet) */
   color1?: string;
-  /** Secondary color hex (default "#1a1040" — deep indigo) */
+  /** Secondary color hex (default "#4f46e5" — electric-600) */
   color2?: string;
-  /** Tertiary color hex (default "#0a0a14" — near-black blue) */
+  /** Tertiary color hex (default "#6366f1" — electric-500) */
   color3?: string;
   className?: string;
 }
@@ -200,15 +200,15 @@ function Grainient({
   grainAmount = 0.1,
   grainScale = 2,
   grainAnimated = false,
-  contrast = 1.5,
+  contrast = 1.2,
   gamma = 1,
   saturation = 1,
   centerX = 0,
   centerY = 0,
   zoom = 0.9,
-  color1 = "#261725",
-  color2 = "#1a1040",
-  color3 = "#0a0a14",
+  color1 = "#2a1855",
+  color2 = "#4f46e5",
+  color3 = "#6366f1",
   className = "",
 }: GrainientProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -349,7 +349,7 @@ function Grainient({
   return (
     <div
       ref={containerRef}
-      className={`h-full w-full overflow-hidden ${className}`.trim()}
+      className={`relative h-full w-full overflow-hidden ${className}`.trim()}
       aria-hidden="true"
       role="presentation"
     />

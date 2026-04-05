@@ -27,13 +27,43 @@ function Hero({ region }: { region: Region }) {
   const copyY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative flex min-h-[calc(100vh-3.5rem)] items-center overflow-hidden"
-    >
+    <section ref={sectionRef} className="relative flex min-h-screen items-center overflow-hidden">
       {/* Background: grainient base + dot-grid overlay */}
-      <motion.div variants={fadeIn} initial="hidden" animate="visible" className="absolute inset-0">
-        <Grainient className="absolute inset-0" />
+      <motion.div
+        variants={fadeIn}
+        initial="hidden"
+        animate="visible"
+        className="absolute inset-0"
+        style={{
+          maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
+        }}
+      >
+        <Grainient
+          color1="#2a1855"
+          color2="#4f46e5"
+          color3="#6366f1"
+          timeSpeed={0.25}
+          colorBalance={-0.02}
+          warpStrength={2.3}
+          warpFrequency={5}
+          warpSpeed={2}
+          warpAmplitude={57}
+          blendAngle={79}
+          blendSoftness={0.05}
+          rotationAmount={500}
+          noiseScale={2}
+          grainAmount={0.1}
+          grainScale={2}
+          grainAnimated={false}
+          contrast={2.5}
+          gamma={1}
+          saturation={1}
+          centerX={0}
+          centerY={0}
+          zoom={0.9}
+          className="absolute inset-0"
+        />
         <DotGrid />
       </motion.div>
 
@@ -48,7 +78,9 @@ function Hero({ region }: { region: Region }) {
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
             High-Velocity
             <br />
-            <GradientText animationSpeed={6}>Cloud Engineering.</GradientText>
+            <GradientText className="pb-2.5" animationSpeed={6}>
+              Cloud Engineering.
+            </GradientText>
           </h1>
           <p className="max-w-xl text-lg text-muted-foreground sm:text-xl">
             {subHeadlines[region]}
