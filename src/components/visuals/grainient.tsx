@@ -349,7 +349,7 @@ function Grainient({
   return (
     <div
       ref={containerRef}
-      className={`h-full w-full overflow-hidden ${className}`.trim()}
+      className={`relative h-full w-full overflow-hidden ${className}`.trim()}
       aria-hidden="true"
       role="presentation"
     />
