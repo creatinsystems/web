@@ -102,7 +102,7 @@ function Sparkline() {
 function DashboardMockup() {
   return (
     <div
-      className="relative overflow-hidden rounded-xl border border-border/60 bg-background shadow-card"
+      className="relative aspect-4/3 overflow-hidden rounded-xl border border-border/60 bg-background shadow-card"
       aria-hidden="true"
       role="presentation"
     >
@@ -111,7 +111,7 @@ function DashboardMockup() {
         className="origin-top-left scale-[0.55] sm:scale-[0.6]"
         style={{ width: "182%", height: "182%" }}
       >
-        <div className="flex min-h-[520px]">
+        <div className="flex min-h-130">
           {/* Sidebar — hidden on mobile to save space */}
           <div className="hidden w-48 shrink-0 flex-col border-r border-border/40 bg-card px-3 py-4 sm:flex">
             <div className="mb-4 px-2">

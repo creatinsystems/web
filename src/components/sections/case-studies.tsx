@@ -7,6 +7,7 @@ import { scaleIn, staggerContainer } from "@/lib/motion";
 import { MotionSection } from "@/components/layout/motion-section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { DashboardMockup } from "@/components/visuals/dashboard-mockup";
+import { BorderGlow } from "@/components/visuals/border-glow";
 import type { Region } from "@/lib/region";
 
 /* ── Case study data ──────────────────────────────────────── */
@@ -102,44 +103,46 @@ function CaseStudies({ region }: { region: Region }) {
 
             return (
               <motion.div key={i} variants={scaleIn}>
-                <Card className="flex h-full flex-col">
-                  {/* Visual */}
-                  <CardContent className="pt-4">
-                    {study.visual === "dashboard" ? (
-                      <div className="overflow-hidden rounded-lg">
-                        <DashboardMockup />
-                      </div>
-                    ) : (
-                      <GradientPlaceholder
-                        gradient={study.gradient ?? "from-muted to-muted/50"}
-                        icon={study.icon}
-                      />
-                    )}
-                  </CardContent>
-
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <study.icon className="size-4 text-primary" />
-                      <CardTitle className="text-base">{title}</CardTitle>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="flex flex-1 flex-col justify-between gap-4">
-                    <CardDescription className="leading-relaxed">
-                      {study.description}
-                    </CardDescription>
-
-                    {/* Metrics */}
-                    <div className="flex gap-6 border-t border-border/40 pt-4">
-                      {study.metrics.map((metric) => (
-                        <div key={metric.label} className="space-y-0.5">
-                          <p className="text-2xl font-bold text-primary">{metric.value}</p>
-                          <p className="text-xs text-muted-foreground">{metric.label}</p>
+                <BorderGlow className="h-full">
+                  <Card className="flex h-full flex-col border-0 bg-transparent shadow-none">
+                    {/* Visual */}
+                    <CardContent className="pt-4">
+                      {study.visual === "dashboard" ? (
+                        <div className="overflow-hidden rounded-lg">
+                          <DashboardMockup />
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                      ) : (
+                        <GradientPlaceholder
+                          gradient={study.gradient ?? "from-muted to-muted/50"}
+                          icon={study.icon}
+                        />
+                      )}
+                    </CardContent>
+
+                    <CardHeader>
+                      <div className="flex items-center gap-2">
+                        <study.icon className="size-4 text-primary" />
+                        <CardTitle className="text-base">{title}</CardTitle>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="flex flex-1 flex-col justify-between gap-4">
+                      <CardDescription className="leading-relaxed">
+                        {study.description}
+                      </CardDescription>
+
+                      {/* Metrics */}
+                      <div className="flex gap-6 border-t border-border/40 pt-4">
+                        {study.metrics.map((metric) => (
+                          <div key={metric.label} className="space-y-0.5">
+                            <p className="text-2xl font-bold text-primary">{metric.value}</p>
+                            <p className="text-xs text-muted-foreground">{metric.label}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </BorderGlow>
               </motion.div>
             );
           })}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useScroll, useMotionValueEvent } from "framer-motion";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
@@ -17,11 +18,20 @@ const navLinks = [
 
 function Navbar({ className, ...props }: React.ComponentProps<"header">) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setScrolled(latest > 16);
+  });
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg",
+        "fixed top-0 z-50 w-full border-b transition-all duration-300",
+        scrolled
+          ? "border-border/40 bg-background/40 backdrop-blur-lg"
+          : "border-transparent bg-transparent",
         className
       )}
       {...props}

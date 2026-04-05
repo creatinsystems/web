@@ -13,6 +13,7 @@ import {
 } from "@/lib/motion";
 import { MotionSection } from "@/components/layout/motion-section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { BorderGlow } from "@/components/visuals/border-glow";
 import type { Variants } from "framer-motion";
 
 interface Service {
@@ -76,22 +77,24 @@ function Services() {
           {services.map((service) => (
             <motion.div key={service.label} variants={service.animation}>
               <motion.div whileHover={hoverVariant} whileTap={tapVariant}>
-                <Card className="h-full">
-                  <CardHeader>
-                    <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-primary/10">
-                      <service.icon className="size-5 text-primary" />
-                    </div>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-                      {service.label}
-                    </p>
-                    <CardTitle>{service.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-base leading-relaxed">
-                      {service.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
+                <BorderGlow className="h-full">
+                  <Card className="h-full border-0 bg-transparent shadow-none">
+                    <CardHeader>
+                      <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-primary/10">
+                        <service.icon className="size-5 text-primary" />
+                      </div>
+                      <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+                        {service.label}
+                      </p>
+                      <CardTitle>{service.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription className="text-base leading-relaxed">
+                        {service.description}
+                      </CardDescription>
+                    </CardContent>
+                  </Card>
+                </BorderGlow>
               </motion.div>
             </motion.div>
           ))}

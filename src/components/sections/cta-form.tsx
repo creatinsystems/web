@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { GradientText } from "@/components/visuals/gradient-text";
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
@@ -61,7 +62,7 @@ function CtaForm() {
             Get Started
           </p>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Stop Guessing. Start Scaling.
+            Stop Guessing. <GradientText animationSpeed={6}>Start Scaling.</GradientText>
           </h2>
           <p className="text-lg text-muted-foreground">
             Get a free, 1-page technical audit of your current system. We&rsquo;ll analyze your
