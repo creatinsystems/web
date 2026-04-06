@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 const { Root, Portal, Backdrop, Popup, Close } = Dialog;
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +8,8 @@ import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { ThemeColor } from "@/components/visuals/card-abstract";
+
+/* ── Types ────────────────────────────────────────────────── */
 
 interface CaseStudy {
   title: string;
@@ -20,6 +22,8 @@ interface CaseStudy {
   icon: React.ComponentType<{ className?: string }>;
   themeColor: ThemeColor;
 }
+
+/* ── Theme maps ───────────────────────────────────────────── */
 
 const themeClasses: Record<ThemeColor, string> = {
   blue: "from-blue-600 to-blue-800 border-blue-500/30",
@@ -35,32 +39,141 @@ const iconThemeClasses: Record<ThemeColor, string> = {
   orange: "text-orange-400",
 };
 
+/* ── Responsive media query hook ──────────────────────────── */
+
+const desktopQuery = "(min-width: 768px)";
+
+function subscribeDesktop(callback: () => void) {
+  const mq = window.matchMedia(desktopQuery);
+  mq.addEventListener("change", callback);
+  return () => mq.removeEventListener("change", callback);
+}
+
+function getDesktopSnapshot() {
+  return window.matchMedia(desktopQuery).matches;
+}
+
+function getDesktopServerSnapshot() {
+  return false;
+}
+
+function useIsDesktop() {
+  return useSyncExternalStore(subscribeDesktop, getDesktopSnapshot, getDesktopServerSnapshot);
+}
+
+/* ── Drawer content (shared between desktop & mobile) ────── */
+
+function DrawerContent({
+  study,
+  theme,
+  iconTheme,
+  onClose,
+}: {
+  study: CaseStudy;
+  theme: string;
+  iconTheme: string;
+  onClose: () => void;
+}) {
+  const Icon = study.icon;
+
+  return (
+    <div className="flex h-full flex-col overflow-y-auto">
+      {/* Themed header */}
+      <div
+        className={cn(
+          "flex items-center gap-3 border-b border-border/40 bg-gradient-to-r p-6",
+          theme
+        )}
+      >
+        <Icon className={cn("size-5", iconTheme)} />
+        <span className="text-sm font-medium text-white/90">{study.category}</span>
+        <Close
+          render={
+            <button
+              type="button"
+              className="ml-auto rounded-md p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+              aria-label="Close"
+            >
+              <XIcon className="size-5" />
+            </button>
+          }
+        />
+      </div>
+
+      {/* Body */}
+      <div className="flex-1 space-y-6 p-6">
+        <div>
+          <h2 className="text-2xl font-bold leading-tight">{study.title}</h2>
+          <p className="mt-2 text-muted-foreground">{study.description}</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {study.metrics.map((metric) => (
+            <div key={metric.label} className="rounded-lg border border-border/40 bg-card/50 p-3">
+              <p className="text-2xl font-bold text-primary">{metric.value}</p>
+              <p className="text-xs text-muted-foreground">{metric.label}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Challenge
+          </h3>
+          <p className="text-sm leading-relaxed text-foreground/90">{study.challenge}</p>
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Architecture
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {study.architecture.map((tech) => (
+              <span
+                key={tech}
+                className="inline-flex items-center rounded-full border border-border/60 bg-card px-2.5 py-1 text-xs font-medium text-foreground/80"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Solution
+          </h3>
+          <p className="text-sm leading-relaxed text-foreground/90">{study.solution}</p>
+        </div>
+      </div>
+
+      {/* Footer CTA */}
+      <div className="border-t border-border/40 p-6">
+        <a
+          href="#contact"
+          onClick={onClose}
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          Discuss your infrastructure
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/* ── Main drawer component ────────────────────────────────── */
+
 interface CaseStudyDrawerProps {
   study: CaseStudy | null;
   onClose: () => void;
 }
 
 function CaseStudyDrawer({ study, onClose }: CaseStudyDrawerProps) {
-  useEffect(() => {
-    if (!study) return;
+  const isDesktop = useIsDesktop();
 
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKey);
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", handleKey);
-      document.body.style.overflow = "";
-    };
-  }, [study, onClose]);
-
-  if (!study) return null;
-
-  const Icon = study.icon;
-  const theme = themeClasses[study.themeColor];
-  const iconTheme = iconThemeClasses[study.themeColor];
+  const theme = study ? themeClasses[study.themeColor] : "";
+  const iconTheme = study ? iconThemeClasses[study.themeColor] : "";
 
   return (
     <Root open={!!study} onOpenChange={(open: boolean) => !open && onClose()}>
@@ -78,104 +191,50 @@ function CaseStudyDrawer({ study, onClose }: CaseStudyDrawerProps) {
                 />
               }
             />
-            <Popup
-              onClick={(e: React.MouseEvent) => e.stopPropagation()}
-              render={
-                <motion.div
-                  initial={{ x: "100%" }}
-                  animate={{ x: 0 }}
-                  exit={{ x: "100%" }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  className="fixed right-0 top-0 z-50 h-full w-full max-w-lg border-l border-border/40 bg-background shadow-card"
-                >
-                  <div className="flex h-full flex-col overflow-y-auto">
-                    <div
-                      className={cn(
-                        "flex items-center gap-3 border-b border-border/40 p-6 bg-gradient-to-r",
-                        theme
-                      )}
-                    >
-                      <Icon className={cn("size-5", iconTheme)} />
-                      <span className="text-sm font-medium text-white/90">{study.category}</span>
-                      <Close
-                        render={
-                          <button
-                            type="button"
-                            className="ml-auto rounded-md p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-                            aria-label="Close"
-                          >
-                            <XIcon className="size-5" />
-                          </button>
-                        }
-                      />
-                    </div>
 
-                    <div className="flex-1 space-y-6 p-6">
-                      <div>
-                        <h2 className="text-2xl font-bold leading-tight">{study.title}</h2>
-                        <p className="mt-2 text-muted-foreground">{study.description}</p>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        {study.metrics.map((metric) => (
-                          <div
-                            key={metric.label}
-                            className="rounded-lg border border-border/40 bg-card/50 p-3"
-                          >
-                            <p className="text-2xl font-bold text-primary">{metric.value}</p>
-                            <p className="text-xs text-muted-foreground">{metric.label}</p>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="space-y-3">
-                        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                          Challenge
-                        </h3>
-                        <p className="text-sm leading-relaxed text-foreground/90">
-                          {study.challenge}
-                        </p>
-                      </div>
-
-                      <div className="space-y-3">
-                        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                          Architecture
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {study.architecture.map((tech) => (
-                            <span
-                              key={tech}
-                              className="inline-flex items-center rounded-full border border-border/60 bg-card px-2.5 py-1 text-xs font-medium text-foreground/80"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                          Solution
-                        </h3>
-                        <p className="text-sm leading-relaxed text-foreground/90">
-                          {study.solution}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="border-t border-border/40 p-6">
-                      <a
-                        href="#contact"
-                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                      >
-                        Discuss your infrastructure
-                        <span aria-hidden="true">→</span>
-                      </a>
-                    </div>
-                  </div>
-                </motion.div>
-              }
-            />
+            {/* Desktop: centered modal */}
+            {isDesktop ? (
+              <Popup
+                render={
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    className="fixed left-1/2 top-1/2 z-50 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl border border-border/40 bg-background shadow-card"
+                    style={{ maxHeight: "85vh" }}
+                  >
+                    <DrawerContent
+                      study={study}
+                      theme={theme}
+                      iconTheme={iconTheme}
+                      onClose={onClose}
+                    />
+                  </motion.div>
+                }
+              />
+            ) : (
+              /* Mobile: bottom sheet */
+              <Popup
+                render={
+                  <motion.div
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "100%" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="fixed inset-x-0 bottom-0 z-50 overflow-hidden rounded-t-2xl border-t border-border/40 bg-background shadow-card"
+                    style={{ maxHeight: "90vh" }}
+                  >
+                    <DrawerContent
+                      study={study}
+                      theme={theme}
+                      iconTheme={iconTheme}
+                      onClose={onClose}
+                    />
+                  </motion.div>
+                }
+              />
+            )}
           </Portal>
         )}
       </AnimatePresence>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheckIcon,
@@ -153,20 +153,143 @@ const metricValueClasses: Record<ThemeColor, string> = {
 function CaseStudies({ region }: { region: Region }) {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [drawerStudy, setDrawerStudy] = useState<CaseStudy | null>(null);
+  const [canScroll, setCanScroll] = useState({ left: false, right: false });
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const visibleStudies = getVisibleStudies(region, activeCategory);
 
-  const scroll = useCallback((direction: "left" | "right") => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const cardWidth = container.firstElementChild?.getBoundingClientRect().width ?? 360;
-    const gap = 24;
-    container.scrollBy({
-      left: direction === "left" ? -(cardWidth + gap) : cardWidth + gap,
-      behavior: "smooth",
+  /* ── Scroll state tracking ──────────────────────────────── */
+
+  const updateScrollState = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScroll({
+      left: scrollLeft > 1,
+      right: scrollLeft + clientWidth < scrollWidth - 1,
     });
   }, []);
+
+  // Recalculate on filter change + mount
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollLeft = 0;
+    // Small delay to let AnimatePresence settle layout
+    const id = requestAnimationFrame(updateScrollState);
+    return () => cancelAnimationFrame(id);
+  }, [visibleStudies.length, updateScrollState]);
+
+  // Recalculate on resize
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(updateScrollState);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [updateScrollState]);
+
+  /* ── Programmatic smooth scroll (works with overflow:hidden) ── */
+
+  const animationRef = useRef<number>(0);
+
+  const smoothScrollTo = useCallback(
+    (target: number) => {
+      const el = scrollRef.current;
+      if (!el) return;
+      cancelAnimationFrame(animationRef.current);
+
+      const start = el.scrollLeft;
+      const delta = target - start;
+      const duration = 400; // ms
+      let startTime: number | null = null;
+
+      function step(timestamp: number) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // ease-out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el!.scrollLeft = start + delta * eased;
+        if (progress < 1) {
+          animationRef.current = requestAnimationFrame(step);
+        } else {
+          updateScrollState();
+        }
+      }
+
+      animationRef.current = requestAnimationFrame(step);
+    },
+    [updateScrollState]
+  );
+
+  const scroll = useCallback(
+    (direction: "left" | "right") => {
+      const container = scrollRef.current;
+      if (!container) return;
+      const cardWidth = container.firstElementChild?.getBoundingClientRect().width ?? 360;
+      const gap = 24;
+      const offset = direction === "left" ? -(cardWidth + gap) : cardWidth + gap;
+      const target = Math.max(
+        0,
+        Math.min(container.scrollLeft + offset, container.scrollWidth - container.clientWidth)
+      );
+      smoothScrollTo(target);
+    },
+    [smoothScrollTo]
+  );
+
+  /* ── Touch swipe handlers ────────────────────────────────── */
+
+  const touchRef = useRef<{ startX: number; startScrollLeft: number; startY: number } | null>(null);
+  const isDraggingRef = useRef(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    function onTouchStart(e: TouchEvent) {
+      touchRef.current = {
+        startX: e.touches[0].clientX,
+        startY: e.touches[0].clientY,
+        startScrollLeft: el!.scrollLeft,
+      };
+      isDraggingRef.current = false;
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      const touch = touchRef.current;
+      if (!touch) return;
+
+      const deltaX = touch.startX - e.touches[0].clientX;
+      const deltaY = touch.startY - e.touches[0].clientY;
+
+      // If vertical swipe dominates, bail out and let page scroll
+      if (!isDraggingRef.current && Math.abs(deltaY) > Math.abs(deltaX)) {
+        touchRef.current = null;
+        return;
+      }
+
+      // Horizontal swipe — prevent page scroll and move carousel
+      isDraggingRef.current = true;
+      e.preventDefault();
+      el!.scrollLeft = touch.startScrollLeft + deltaX;
+    }
+
+    function onTouchEnd() {
+      touchRef.current = null;
+      isDraggingRef.current = false;
+      updateScrollState();
+    }
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [updateScrollState]);
 
   const closeDrawer = useCallback(() => setDrawerStudy(null), []);
 
@@ -216,34 +339,41 @@ function CaseStudies({ region }: { region: Region }) {
           ))}
         </div>
 
-        {/* Carousel wrapper */}
-        <div className="relative">
-          {/* Navigation arrows */}
-          <button
-            type="button"
-            onClick={() => scroll("left")}
-            className="absolute -left-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-border/60 bg-card/80 p-2 text-muted-foreground shadow-soft backdrop-blur-sm transition-colors hover:text-foreground lg:flex"
-            aria-label="Scroll left"
-          >
-            <ChevronLeftIcon className="size-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => scroll("right")}
-            className="absolute -right-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-border/60 bg-card/80 p-2 text-muted-foreground shadow-soft backdrop-blur-sm transition-colors hover:text-foreground lg:flex"
-            aria-label="Scroll right"
-          >
-            <ChevronRightIcon className="size-5" />
-          </button>
+        {/* Carousel wrapper — horizontal padding reserves space for arrows */}
+        <div className="relative px-0 md:px-12 lg:px-14">
+          {/* Navigation arrows — only visible when content overflows */}
+          {canScroll.left && (
+            <button
+              type="button"
+              onClick={() => scroll("left")}
+              className="absolute left-0 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-border/60 bg-card/80 p-2 text-muted-foreground shadow-soft backdrop-blur-sm transition-colors hover:text-foreground md:flex"
+              aria-label="Scroll left"
+            >
+              <ChevronLeftIcon className="size-5" />
+            </button>
+          )}
+          {canScroll.right && (
+            <button
+              type="button"
+              onClick={() => scroll("right")}
+              className="absolute right-0 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-border/60 bg-card/80 p-2 text-muted-foreground shadow-soft backdrop-blur-sm transition-colors hover:text-foreground md:flex"
+              aria-label="Scroll right"
+            >
+              <ChevronRightIcon className="size-5" />
+            </button>
+          )}
 
-          {/* Scrollable track */}
+          {/* Scroll track — overflow:hidden prevents scroll hijacking; movement is JS-only */}
           <motion.div
             ref={scrollRef}
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4"
+            className={cn(
+              "scrollbar-none flex gap-6 overflow-hidden pb-4",
+              !canScroll.left && !canScroll.right ? "justify-center" : "justify-start"
+            )}
           >
             <AnimatePresence mode="popLayout">
               {visibleStudies.map((study) => (
@@ -255,7 +385,7 @@ function CaseStudies({ region }: { region: Region }) {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                  className="w-[320px] flex-shrink-0 snap-start sm:w-[360px]"
+                  className="w-[320px] flex-shrink-0 sm:w-[360px]"
                 >
                   <button
                     type="button"
