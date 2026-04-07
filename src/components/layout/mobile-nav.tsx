@@ -5,8 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { MenuIcon, XIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { GradientText } from "@/components/visuals/gradient-text";
 
 /* ── Types ──────────────────────────────────────────────────── */
 
@@ -162,7 +161,7 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                   animate="visible"
                   exit="hidden"
                   transition={{ duration: dur }}
-                  className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl md:hidden"
+                  className="fixed inset-0 z-[60] bg-background/95 backdrop-blur-xl md:hidden"
                   aria-hidden="true"
                 >
                   {/* Subtle radial gradient accent */}
@@ -184,7 +183,7 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: dur }}
-                  className="fixed inset-0 z-50 flex flex-col items-center justify-center md:hidden"
+                  className="fixed inset-0 z-[70] flex flex-col items-center justify-center md:hidden"
                 >
                   {/* Close button — top-right, matches hamburger position */}
                   <div className="absolute top-0 right-0 p-4">
@@ -221,11 +220,8 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                       </motion.a>
                     ))}
 
-                    {/* CTA — fades in after links */}
-                    <motion.a
-                      href="#contact"
-                      onClick={close}
-                      variants={ctaVariants}
+                    {/* CTA — gradient text link, fades in after links */}
+                    <motion.div
                       initial="hidden"
                       animate="visible"
                       exit="exit"
@@ -234,10 +230,16 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                         delay: instant ? 0 : 0.05 + links.length * 0.05 + 0.05,
                         ease: "easeOut",
                       }}
-                      className={cn(buttonVariants({ size: "cta" }), "mt-4")}
+                      className="mt-4"
                     >
-                      Claim Free Audit
-                    </motion.a>
+                      <a
+                        href="#contact"
+                        onClick={close}
+                        className="text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <GradientText animationSpeed={6}>Claim Free Audit</GradientText>
+                      </a>
+                    </motion.div>
                   </div>
                 </motion.nav>
               )}
