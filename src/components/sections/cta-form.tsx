@@ -9,13 +9,15 @@ import { track } from "@vercel/analytics";
 
 import { contactSchema, type ContactFormData } from "@/lib/schemas/contact";
 import { submitContact } from "@/actions/contact";
-import { tapVariant, hoverVariant } from "@/lib/motion";
-import { MotionSection } from "@/components/layout/motion-section";
+import { fadeInUp, tapVariant, hoverVariant } from "@/lib/motion";
+import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { GradientText } from "@/components/visuals/gradient-text";
+import { Grainient } from "@/components/visuals/grainient";
+import { BorderGlow } from "@/components/visuals/border-glow";
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
@@ -55,95 +57,128 @@ function CtaForm() {
   };
 
   return (
-    <MotionSection id="contact" variant="accent">
-      <div className="mx-auto max-w-2xl space-y-8 text-center">
-        <div className="space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">
-            Get Started
-          </p>
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Stop Guessing. <GradientText animationSpeed={6}>Start Scaling.</GradientText>
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Get a free, 1-page technical audit of your current system. We&rsquo;ll analyze your
-            speed, security, and UX bottlenecks. No sales pressure, just actionable engineering
-            advice.
-          </p>
-        </div>
-
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mx-auto max-w-md space-y-5 rounded-xl border border-border/60 bg-card p-6 text-left shadow-card sm:p-8"
-        >
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              placeholder="Jane Doe"
-              disabled={isSubmitting}
-              aria-invalid={!!errors.name}
-              aria-describedby={errors.name ? "name-error" : undefined}
-              {...register("name")}
-            />
-            <FieldError id="name-error" message={errors.name?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Work Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="jane@company.com"
-              disabled={isSubmitting}
-              aria-invalid={!!errors.email}
-              aria-describedby={errors.email ? "email-error" : undefined}
-              {...register("email")}
-            />
-            <FieldError id="email-error" message={errors.email?.message} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="company">Company / URL</Label>
-            <Input
-              id="company"
-              placeholder="https://company.com (optional)"
-              disabled={isSubmitting}
-              {...register("company")}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="headache">What is your biggest tech headache right now?</Label>
-            <Textarea
-              id="headache"
-              placeholder="Tell us about the system or process that keeps you up at night..."
-              className="min-h-28"
-              disabled={isSubmitting}
-              aria-invalid={!!errors.headache}
-              aria-describedby={errors.headache ? "headache-error" : undefined}
-              {...register("headache")}
-            />
-            <FieldError id="headache-error" message={errors.headache?.message} />
-          </div>
-
-          <motion.div
-            whileTap={isSubmitting ? undefined : tapVariant}
-            whileHover={isSubmitting ? undefined : hoverVariant}
-          >
-            <Button type="submit" className="min-h-11 w-full text-base" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                "Request Free Audit"
-              )}
-            </Button>
-          </motion.div>
-        </form>
+    <motion.section
+      id="contact"
+      variants={fadeInUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      className="relative overflow-hidden py-24 sm:py-32"
+    >
+      {/* Dimmed Grainient background — lower contrast & opacity than hero */}
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          maskImage:
+            "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+        }}
+      >
+        <Grainient
+          color1="#1a1040"
+          color2="#4f46e5"
+          color3="#6366f1"
+          timeSpeed={0.15}
+          contrast={1.0}
+          gamma={1}
+          saturation={1}
+          className="absolute inset-0"
+        />
       </div>
-    </MotionSection>
+
+      <Container>
+        <div className="relative z-10 mx-auto max-w-2xl space-y-8 text-center">
+          <div className="space-y-4">
+            <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+              Get Started
+            </p>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Stop Guessing. <GradientText animationSpeed={6}>Start Scaling.</GradientText>
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Get a free, 1-page technical audit of your current system. We&rsquo;ll analyze your
+              speed, security, and UX bottlenecks. No sales pressure, just actionable engineering
+              advice.
+            </p>
+          </div>
+
+          <BorderGlow className="mx-auto max-w-md">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-5 rounded-xl border border-border/60 bg-card p-6 text-left shadow-card sm:p-8"
+            >
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  placeholder="Jane Doe"
+                  disabled={isSubmitting}
+                  aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? "name-error" : undefined}
+                  {...register("name")}
+                />
+                <FieldError id="name-error" message={errors.name?.message} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Work Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="jane@company.com"
+                  disabled={isSubmitting}
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "email-error" : undefined}
+                  {...register("email")}
+                />
+                <FieldError id="email-error" message={errors.email?.message} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="company">Company / URL</Label>
+                <Input
+                  id="company"
+                  placeholder="https://company.com (optional)"
+                  disabled={isSubmitting}
+                  {...register("company")}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="headache">What is your biggest tech headache right now?</Label>
+                <Textarea
+                  id="headache"
+                  placeholder="Tell us about the system or process that keeps you up at night..."
+                  className="min-h-28"
+                  disabled={isSubmitting}
+                  aria-invalid={!!errors.headache}
+                  aria-describedby={errors.headache ? "headache-error" : undefined}
+                  {...register("headache")}
+                />
+                <FieldError id="headache-error" message={errors.headache?.message} />
+              </div>
+
+              <motion.div
+                whileTap={isSubmitting ? undefined : tapVariant}
+                whileHover={isSubmitting ? undefined : hoverVariant}
+              >
+                <Button type="submit" className="min-h-11 w-full text-base" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    "Request Free Audit"
+                  )}
+                </Button>
+              </motion.div>
+            </form>
+          </BorderGlow>
+        </div>
+      </Container>
+    </motion.section>
   );
 }
 
