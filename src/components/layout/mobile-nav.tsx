@@ -46,11 +46,28 @@ const linkVariants = {
   exit: { opacity: 0, y: -10 },
 };
 
+const linksContainerVariants = {
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.04,
+      staggerDirection: 1,
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      staggerChildren: 0.04,
+      staggerDirection: -1,
+    },
+  },
+};
+
 /* ── Icon cross-fade variants ───────────────────────────────── */
 
 const iconEnter = { opacity: 1, rotate: 0 };
 const iconExit = { opacity: 0, rotate: 90 };
-const iconSpring = { type: "spring" as const, stiffness: 300, damping: 25 };
+const iconSpring = { type: "spring" as const, stiffness: 400, damping: 28 };
 
 /* ── Component ──────────────────────────────────────────────── */
 
@@ -119,7 +136,7 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
   }, [open]);
 
   const instant = prefersReduced.current;
-  const dur = instant ? 0 : 0.2;
+  const dur = instant ? 0 : 0.15;
 
   return (
     <>
@@ -133,7 +150,7 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
         aria-controls="mobile-nav-panel"
         aria-label={open ? "Close menu" : "Open menu"}
       >
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence mode="popLayout" initial={false}>
           {open ? (
             <motion.span
               key="x"
@@ -196,12 +213,18 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                   aria-label="Mobile navigation"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: dur }}
-                  className="fixed inset-x-0 top-14 bottom-0 z-[70] flex flex-col items-center justify-center md:hidden"
+                  className="fixed inset-x-0 top-14 bottom-0 z-[70] flex flex-col items-center justify-start pt-[15vh] md:hidden"
                 >
-                  {/* Links — centered with staggered entrance */}
-                  <div className="flex flex-col items-center gap-8">
+                  {/* Links — staggered entrance/exit */}
+                  <motion.div
+                    variants={linksContainerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="flex flex-col items-center gap-8"
+                  >
                     {links.map((link, i) => (
                       <motion.a
                         key={link.href}
@@ -212,8 +235,8 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                         animate="visible"
                         exit="exit"
                         transition={{
-                          duration: instant ? 0 : 0.3,
-                          delay: instant ? 0 : 0.05 + i * 0.05,
+                          duration: instant ? 0 : 0.2,
+                          delay: instant ? 0 : 0.03 + i * 0.04,
                           ease: "easeOut",
                         }}
                         className="text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -229,8 +252,8 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                       animate="visible"
                       exit="exit"
                       transition={{
-                        duration: instant ? 0 : 0.3,
-                        delay: instant ? 0 : 0.05 + links.length * 0.05 + 0.05,
+                        duration: instant ? 0 : 0.2,
+                        delay: instant ? 0 : 0.03 + links.length * 0.04 + 0.04,
                         ease: "easeOut",
                       }}
                     >
@@ -242,7 +265,7 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                         <GradientText animationSpeed={6}>Claim Free Audit</GradientText>
                       </a>
                     </motion.div>
-                  </div>
+                  </motion.div>
                 </motion.nav>
               )}
             </AnimatePresence>
