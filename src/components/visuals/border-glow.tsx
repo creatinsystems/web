@@ -177,7 +177,7 @@ function BorderGlow({
       onPointerMove={handlePointerMove}
       onPointerEnter={() => setIsHovered(true)}
       onPointerLeave={() => setIsHovered(false)}
-      className={`relative grid isolate ${className}`}
+      className={`relative grid isolate overflow-hidden ${className}`}
       style={{
         background: backgroundColor,
         borderRadius: `${borderRadius}px`,
