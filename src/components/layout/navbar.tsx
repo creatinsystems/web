@@ -56,7 +56,7 @@ function Navbar({ className, ...props }: React.ComponentProps<"header">) {
         <div className="flex items-center gap-2">
           <a
             href="#contact"
-            className={cn(buttonVariants({ size: "sm" }), "hidden min-h-9 sm:inline-flex")}
+            className={cn(buttonVariants({ size: "sm" }), "hidden min-h-9 md:inline-flex")}
           >
             Claim Free Audit
           </a>
