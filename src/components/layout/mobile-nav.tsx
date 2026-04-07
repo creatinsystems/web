@@ -230,12 +230,11 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                         delay: instant ? 0 : 0.05 + links.length * 0.05 + 0.05,
                         ease: "easeOut",
                       }}
-                      className="mt-4"
                     >
                       <a
                         href="#contact"
                         onClick={close}
-                        className="text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
+                        className="text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground"
                       >
                         <GradientText animationSpeed={6}>Claim Free Audit</GradientText>
                       </a>
