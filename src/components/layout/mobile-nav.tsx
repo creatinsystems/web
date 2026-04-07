@@ -46,18 +46,17 @@ const linkVariants = {
   exit: { opacity: 0, y: -10 },
 };
 
-const ctaVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -8 },
-};
+/* ── Icon cross-fade variants ───────────────────────────────── */
+
+const iconEnter = { opacity: 1, rotate: 0 };
+const iconExit = { opacity: 0, rotate: 90 };
+const iconSpring = { type: "spring" as const, stiffness: 300, damping: 25 };
 
 /* ── Component ──────────────────────────────────────────────── */
 
 function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
   const close = useCallback(() => onOpenChange(false), [onOpenChange]);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
   const prefersReduced = usePrefersReducedMotion();
 
   /* Close on Escape */
@@ -84,20 +83,7 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
     };
   }, [open]);
 
-  /* Auto-focus close button on open, return focus on close */
-  useEffect(() => {
-    if (open) {
-      // Small delay to let AnimatePresence mount the element
-      const raf = requestAnimationFrame(() => {
-        closeRef.current?.focus();
-      });
-      return () => cancelAnimationFrame(raf);
-    } else {
-      triggerRef.current?.focus();
-    }
-  }, [open]);
-
-  /* Focus trap */
+  /* Focus trap — scoped to trigger + portal panel */
   useEffect(() => {
     if (!open) return;
 
@@ -107,9 +93,13 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
       const panel = document.getElementById("mobile-nav-panel");
       if (!panel) return;
 
-      const focusable = panel.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      /* Collect focusables from both the trigger and the panel */
+      const panelFocusable = Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
       );
+      const focusable = [triggerRef.current, ...panelFocusable].filter(Boolean) as HTMLElement[];
       if (focusable.length === 0) return;
 
       const first = focusable[0];
@@ -133,17 +123,41 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
 
   return (
     <>
-      {/* Hamburger trigger */}
+      {/* Hamburger / X trigger — stays in the navbar */}
       <button
         ref={triggerRef}
         type="button"
         onClick={() => onOpenChange(!open)}
-        className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:hidden"
+        className="relative inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:hidden"
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
         aria-label={open ? "Close menu" : "Open menu"}
       >
-        {open ? <XIcon className="size-5" /> : <MenuIcon className="size-5" />}
+        <AnimatePresence mode="wait" initial={false}>
+          {open ? (
+            <motion.span
+              key="x"
+              initial={iconExit}
+              animate={iconEnter}
+              exit={iconExit}
+              transition={instant ? { duration: 0 } : iconSpring}
+              className="absolute"
+            >
+              <XIcon className="size-5" />
+            </motion.span>
+          ) : (
+            <motion.span
+              key="menu"
+              initial={iconExit}
+              animate={iconEnter}
+              exit={iconExit}
+              transition={instant ? { duration: 0 } : iconSpring}
+              className="absolute"
+            >
+              <MenuIcon className="size-5" />
+            </motion.span>
+          )}
+        </AnimatePresence>
       </button>
 
       {/* Portal to document.body — escapes header's backdrop-filter
@@ -151,7 +165,7 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
       {typeof document !== "undefined" &&
         createPortal(
           <>
-            {/* Full-screen overlay */}
+            {/* Overlay — starts below navbar (top-14 = 56px) */}
             <AnimatePresence>
               {open && (
                 <motion.div
@@ -161,7 +175,8 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                   animate="visible"
                   exit="hidden"
                   transition={{ duration: dur }}
-                  className="fixed inset-0 z-[60] bg-background/95 backdrop-blur-xl md:hidden"
+                  className="fixed inset-x-0 top-14 bottom-0 z-[60] bg-background/95 backdrop-blur-xl md:hidden"
+                  onClick={close}
                   aria-hidden="true"
                 >
                   {/* Subtle radial gradient accent */}
@@ -170,7 +185,7 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
               )}
             </AnimatePresence>
 
-            {/* Navigation panel */}
+            {/* Navigation panel — below navbar, centered in remaining space */}
             <AnimatePresence>
               {open && (
                 <motion.nav
@@ -183,21 +198,8 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: dur }}
-                  className="fixed inset-0 z-[70] flex flex-col items-center justify-center md:hidden"
+                  className="fixed inset-x-0 top-14 bottom-0 z-[70] flex flex-col items-center justify-center md:hidden"
                 >
-                  {/* Close button — top-right, matches hamburger position */}
-                  <div className="absolute top-0 right-0 p-4">
-                    <button
-                      ref={closeRef}
-                      type="button"
-                      onClick={close}
-                      className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
-                      aria-label="Close menu"
-                    >
-                      <XIcon className="size-5" />
-                    </button>
-                  </div>
-
                   {/* Links — centered with staggered entrance */}
                   <div className="flex flex-col items-center gap-8">
                     {links.map((link, i) => (
@@ -222,6 +224,7 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
 
                     {/* CTA — gradient text link, fades in after links */}
                     <motion.div
+                      variants={linkVariants}
                       initial="hidden"
                       animate="visible"
                       exit="exit"
