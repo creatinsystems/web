@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { MenuIcon, XIcon } from "lucide-react";
 
@@ -146,96 +147,104 @@ function MobileNav({ links, open, onOpenChange }: MobileNavProps) {
         {open ? <XIcon className="size-5" /> : <MenuIcon className="size-5" />}
       </button>
 
-      {/* Full-screen overlay */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            key="overlay"
-            variants={overlayVariants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            transition={{ duration: dur }}
-            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl md:hidden"
-            aria-hidden="true"
-          >
-            {/* Subtle radial gradient accent */}
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08)_0%,transparent_60%)]" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Navigation panel */}
-      <AnimatePresence>
-        {open && (
-          <motion.nav
-            id="mobile-nav-panel"
-            key="panel"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile navigation"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: dur }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center md:hidden"
-          >
-            {/* Close button — top-right, matches hamburger position */}
-            <div className="absolute top-0 right-0 p-4">
-              <button
-                ref={closeRef}
-                type="button"
-                onClick={close}
-                className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
-                aria-label="Close menu"
-              >
-                <XIcon className="size-5" />
-              </button>
-            </div>
-
-            {/* Links — centered with staggered entrance */}
-            <div className="flex flex-col items-center gap-8">
-              {links.map((link, i) => (
-                <motion.a
-                  key={link.href}
-                  href={link.href}
-                  onClick={close}
-                  variants={linkVariants}
+      {/* Portal to document.body — escapes header's backdrop-filter
+          containing block that would break fixed positioning */}
+      {typeof document !== "undefined" &&
+        createPortal(
+          <>
+            {/* Full-screen overlay */}
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  key="overlay"
+                  variants={overlayVariants}
                   initial="hidden"
                   animate="visible"
-                  exit="exit"
-                  transition={{
-                    duration: instant ? 0 : 0.3,
-                    delay: instant ? 0 : 0.05 + i * 0.05,
-                    ease: "easeOut",
-                  }}
-                  className="text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  exit="hidden"
+                  transition={{ duration: dur }}
+                  className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl md:hidden"
+                  aria-hidden="true"
                 >
-                  {link.label}
-                </motion.a>
-              ))}
+                  {/* Subtle radial gradient accent */}
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08)_0%,transparent_60%)]" />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-              {/* CTA — fades in after links */}
-              <motion.a
-                href="#contact"
-                onClick={close}
-                variants={ctaVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                transition={{
-                  duration: instant ? 0 : 0.3,
-                  delay: instant ? 0 : 0.05 + links.length * 0.05 + 0.05,
-                  ease: "easeOut",
-                }}
-                className={cn(buttonVariants({ size: "cta" }), "mt-4")}
-              >
-                Claim Free Audit
-              </motion.a>
-            </div>
-          </motion.nav>
+            {/* Navigation panel */}
+            <AnimatePresence>
+              {open && (
+                <motion.nav
+                  id="mobile-nav-panel"
+                  key="panel"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Mobile navigation"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: dur }}
+                  className="fixed inset-0 z-50 flex flex-col items-center justify-center md:hidden"
+                >
+                  {/* Close button — top-right, matches hamburger position */}
+                  <div className="absolute top-0 right-0 p-4">
+                    <button
+                      ref={closeRef}
+                      type="button"
+                      onClick={close}
+                      className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
+                      aria-label="Close menu"
+                    >
+                      <XIcon className="size-5" />
+                    </button>
+                  </div>
+
+                  {/* Links — centered with staggered entrance */}
+                  <div className="flex flex-col items-center gap-8">
+                    {links.map((link, i) => (
+                      <motion.a
+                        key={link.href}
+                        href={link.href}
+                        onClick={close}
+                        variants={linkVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        transition={{
+                          duration: instant ? 0 : 0.3,
+                          delay: instant ? 0 : 0.05 + i * 0.05,
+                          ease: "easeOut",
+                        }}
+                        className="text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        {link.label}
+                      </motion.a>
+                    ))}
+
+                    {/* CTA — fades in after links */}
+                    <motion.a
+                      href="#contact"
+                      onClick={close}
+                      variants={ctaVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      transition={{
+                        duration: instant ? 0 : 0.3,
+                        delay: instant ? 0 : 0.05 + links.length * 0.05 + 0.05,
+                        ease: "easeOut",
+                      }}
+                      className={cn(buttonVariants({ size: "cta" }), "mt-4")}
+                    >
+                      Claim Free Audit
+                    </motion.a>
+                  </div>
+                </motion.nav>
+              )}
+            </AnimatePresence>
+          </>,
+          document.body
         )}
-      </AnimatePresence>
     </>
   );
 }
