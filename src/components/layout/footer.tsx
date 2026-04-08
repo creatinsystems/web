@@ -3,10 +3,7 @@ import { ExternalLinkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/layout/container";
 
-const socialLinks = [
-  { label: "LinkedIn", href: "https://linkedin.com/company/creatinsystems" },
-  { label: "GitHub", href: "https://github.com/creatinsystems" },
-] as const;
+const socialLinks = [{ label: "GitHub", href: "https://github.com/creatinsystems" }] as const;
 
 function Footer({ className, ...props }: React.ComponentProps<"footer">) {
   return (
