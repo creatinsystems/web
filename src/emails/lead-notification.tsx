@@ -35,6 +35,8 @@ export function LeadNotification({
       </Preview>
       <Body style={body}>
         <Container style={container}>
+          <Section style={topAccent} />
+
           <Section style={header}>
             <Heading as="h1" style={headerTitle}>
               Creatin Systems
@@ -78,7 +80,7 @@ export function LeadNotification({
 
           <Section style={footer}>
             <Text style={footerText}>
-              This is an automated notification from the Creatin Systems website contact form.
+              Automated notification · Creatin Systems website contact form
             </Text>
           </Section>
         </Container>
@@ -89,10 +91,12 @@ export function LeadNotification({
 
 /* ── Styles ────────────────────────────────────────────────── */
 
+const fontFamily =
+  '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
 const body: React.CSSProperties = {
-  backgroundColor: "#f0f3ff",
-  fontFamily:
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  backgroundColor: "#f4f4f5",
+  fontFamily,
   margin: 0,
   padding: 0,
 };
@@ -103,88 +107,101 @@ const container: React.CSSProperties = {
   padding: "20px 0",
 };
 
-const header: React.CSSProperties = {
-  backgroundColor: "#0e1240",
+const topAccent: React.CSSProperties = {
+  height: "2px",
+  backgroundColor: "#818cf8",
   borderRadius: "12px 12px 0 0",
+  margin: 0,
+  padding: 0,
+};
+
+const header: React.CSSProperties = {
+  backgroundColor: "#ffffff",
   padding: "32px 40px",
   textAlign: "center" as const,
 };
 
 const headerTitle: React.CSSProperties = {
-  color: "#818cf8",
+  color: "#18181b",
   fontSize: "24px",
-  fontWeight: 700,
+  fontWeight: 600,
   margin: "0 0 4px",
   letterSpacing: "-0.02em",
 };
 
 const headerSubtitle: React.CSSProperties = {
-  color: "#9aaeff",
+  color: "#71717a",
   fontSize: "14px",
   margin: 0,
+  letterSpacing: "-0.01em",
 };
 
 const content: React.CSSProperties = {
   backgroundColor: "#ffffff",
-  padding: "32px 40px",
+  padding: "0 40px 32px",
 };
 
 const sectionTitle: React.CSSProperties = {
-  color: "#0e1240",
+  color: "#18181b",
   fontSize: "16px",
   fontWeight: 600,
-  margin: "0 0 16px",
+  margin: "0 0 14px",
+  letterSpacing: "-0.01em",
 };
 
 const fieldRow: React.CSSProperties = {
-  marginBottom: "12px",
+  marginBottom: "10px",
 };
 
 const fieldLabel: React.CSSProperties = {
-  color: "#6b7280",
+  color: "#71717a",
   fontSize: "13px",
   fontWeight: 500,
   width: "120px",
   verticalAlign: "top",
   paddingRight: "12px",
+  letterSpacing: "-0.01em",
 };
 
 const fieldValue: React.CSSProperties = {
-  color: "#111827",
+  color: "#18181b",
   fontSize: "14px",
+  letterSpacing: "-0.01em",
 };
 
 const divider: React.CSSProperties = {
-  borderColor: "#e5e7eb",
+  borderColor: "#e4e4e7",
   margin: "24px 0",
 };
 
 const headacheText: React.CSSProperties = {
-  color: "#111827",
+  color: "#18181b",
   fontSize: "14px",
   lineHeight: "1.6",
-  backgroundColor: "#f9fafb",
+  backgroundColor: "#fafafa",
   padding: "16px",
   borderRadius: "8px",
+  borderLeft: "3px solid #818cf8",
   margin: 0,
   whiteSpace: "pre-wrap",
+  letterSpacing: "-0.01em",
 };
 
 const timestamp: React.CSSProperties = {
-  color: "#9ca3af",
+  color: "#a1a1aa",
   fontSize: "12px",
   margin: 0,
 };
 
 const footer: React.CSSProperties = {
-  backgroundColor: "#f9fafb",
+  backgroundColor: "#fafafa",
   borderRadius: "0 0 12px 12px",
   padding: "20px 40px",
   textAlign: "center" as const,
 };
 
 const footerText: React.CSSProperties = {
-  color: "#9ca3af",
+  color: "#a1a1aa",
   fontSize: "12px",
   margin: 0,
 };

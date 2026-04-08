@@ -6,6 +6,7 @@ import {
   Section,
   Text,
   Hr,
+  Link,
   Preview,
   Heading,
 } from "@react-email/components";
@@ -21,6 +22,8 @@ export function LeadConfirmation({ name }: LeadConfirmationProps) {
       <Preview>We received your audit request — Creatin Systems</Preview>
       <Body style={body}>
         <Container style={container}>
+          <Section style={topAccent} />
+
           <Section style={header}>
             <Heading as="h1" style={headerTitle}>
               Creatin Systems
@@ -52,11 +55,17 @@ export function LeadConfirmation({ name }: LeadConfirmationProps) {
               <br />
               High-Velocity Cloud Engineering
             </Text>
+
+            <Section style={ctaSection}>
+              <Link href="https://creatinsystems.com" style={ctaLink}>
+                Visit our site &rarr;
+              </Link>
+            </Section>
           </Section>
 
           <Section style={footer}>
             <Text style={footerText}>
-              You&apos;re receiving this because you submitted a form on creatinsystems.com.
+              You received this email because you submitted a form on creatinsystems.com.
             </Text>
           </Section>
         </Container>
@@ -67,10 +76,12 @@ export function LeadConfirmation({ name }: LeadConfirmationProps) {
 
 /* ── Styles ────────────────────────────────────────────────── */
 
+const fontFamily =
+  '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
 const body: React.CSSProperties = {
-  backgroundColor: "#f0f3ff",
-  fontFamily:
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  backgroundColor: "#f4f4f5",
+  fontFamily,
   margin: 0,
   padding: 0,
 };
@@ -81,61 +92,83 @@ const container: React.CSSProperties = {
   padding: "20px 0",
 };
 
-const header: React.CSSProperties = {
-  backgroundColor: "#0e1240",
+const topAccent: React.CSSProperties = {
+  height: "2px",
+  backgroundColor: "#818cf8",
   borderRadius: "12px 12px 0 0",
+  margin: 0,
+  padding: 0,
+};
+
+const header: React.CSSProperties = {
+  backgroundColor: "#ffffff",
   padding: "32px 40px",
   textAlign: "center" as const,
 };
 
 const headerTitle: React.CSSProperties = {
-  color: "#818cf8",
+  color: "#18181b",
   fontSize: "24px",
-  fontWeight: 700,
+  fontWeight: 600,
   margin: 0,
   letterSpacing: "-0.02em",
 };
 
 const content: React.CSSProperties = {
   backgroundColor: "#ffffff",
-  padding: "32px 40px",
+  padding: "0 40px 32px",
 };
 
 const greeting: React.CSSProperties = {
-  color: "#0e1240",
+  color: "#18181b",
   fontSize: "20px",
   fontWeight: 600,
-  margin: "0 0 16px",
+  margin: "0 0 14px",
+  letterSpacing: "-0.01em",
 };
 
 const paragraph: React.CSSProperties = {
-  color: "#374151",
+  color: "#3f3f46",
   fontSize: "15px",
   lineHeight: "1.6",
-  margin: "0 0 16px",
+  margin: "0 0 14px",
+  letterSpacing: "-0.01em",
 };
 
 const divider: React.CSSProperties = {
-  borderColor: "#e5e7eb",
+  borderColor: "#e4e4e7",
   margin: "24px 0",
 };
 
 const signoff: React.CSSProperties = {
-  color: "#111827",
+  color: "#18181b",
   fontSize: "14px",
   lineHeight: "1.6",
-  margin: 0,
+  margin: "0 0 20px",
+  letterSpacing: "-0.01em",
+};
+
+const ctaSection: React.CSSProperties = {
+  textAlign: "center" as const,
+};
+
+const ctaLink: React.CSSProperties = {
+  color: "#818cf8",
+  fontSize: "14px",
+  fontWeight: 500,
+  textDecoration: "none",
+  letterSpacing: "-0.01em",
 };
 
 const footer: React.CSSProperties = {
-  backgroundColor: "#f9fafb",
+  backgroundColor: "#fafafa",
   borderRadius: "0 0 12px 12px",
   padding: "20px 40px",
   textAlign: "center" as const,
 };
 
 const footerText: React.CSSProperties = {
-  color: "#9ca3af",
+  color: "#a1a1aa",
   fontSize: "12px",
   margin: 0,
 };
