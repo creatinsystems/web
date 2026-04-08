@@ -1,0 +1,20 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="icon-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+    <mask id="icon-mask">
+      <rect width="32" height="32" fill="white" />
+      <rect
+        x="12"
+        y="-4"
+        width="2"
+        height="40"
+        transform="rotate(45 12 -4)"
+        fill="black"
+      />
+    </mask>
+  </defs>
+  <circle cx="16" cy="16" r="16" fill="url(#icon-gradient)" mask="url(#icon-mask)" />
+</svg>

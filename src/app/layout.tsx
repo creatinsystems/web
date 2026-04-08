@@ -53,6 +53,10 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Creatin Systems" }],
   creator: "Creatin Systems",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/apple-icon",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
