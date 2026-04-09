@@ -343,7 +343,6 @@ function CaseStudies({ region }: { region: Region }) {
   }, [updateScrollState, snapToNearestCard]);
 
   const closeDrawer = useCallback(() => {
-    const previousStudy = drawerStudy;
     setDrawerStudy(null);
     // Clear closingCardId after animation to let card reappear
     if (closingCardId) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 const { Root, Portal, Backdrop, Popup, Close } = Dialog;
 import { motion, AnimatePresence, useDragControls, type PanInfo } from "framer-motion";
@@ -266,21 +266,21 @@ interface CaseStudyDrawerProps {
 
 function CaseStudyDrawer({ study, onClose }: CaseStudyDrawerProps) {
   const isDesktop = useIsDesktop();
-  const [exiting, setExiting] = useState(false);
-  const prevStudyRef = useRef<CaseStudy | null>(null);
+  const [snapshot, setSnapshot] = useState<{
+    renderStudy: CaseStudy | null;
+    exiting: boolean;
+  }>({ renderStudy: null, exiting: false });
 
-  // Snapshot the study so content stays visible during exit animation
-  if (study) {
-    prevStudyRef.current = study;
+  // React "adjust state during render" pattern (no refs, no effects)
+  // https://react.dev/reference/react/useState#storing-information-from-previous-renders
+  if (study && snapshot.renderStudy !== study) {
+    setSnapshot({ renderStudy: study, exiting: false });
+  }
+  if (!study && snapshot.renderStudy && !snapshot.exiting) {
+    setSnapshot({ renderStudy: snapshot.renderStudy, exiting: true });
   }
 
-  // Detect close transition: study went from non-null → null
-  // setState during render is safe here (React derived-state pattern)
-  if (!study && prevStudyRef.current && !exiting) {
-    setExiting(true);
-  }
-
-  const renderStudy = study ?? prevStudyRef.current;
+  const { renderStudy, exiting } = snapshot;
   // Keep dialog mounted during exit animation so Portal stays in DOM
   const dialogOpen = !!study || exiting;
   const showContent = !!study;
@@ -289,8 +289,7 @@ function CaseStudyDrawer({ study, onClose }: CaseStudyDrawerProps) {
   const iconTheme = renderStudy ? iconThemeClasses[renderStudy.themeColor] : "";
 
   function handleExitComplete() {
-    setExiting(false);
-    prevStudyRef.current = null;
+    setSnapshot({ renderStudy: null, exiting: false });
   }
 
   return (
