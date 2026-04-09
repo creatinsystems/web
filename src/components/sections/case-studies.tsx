@@ -153,6 +153,7 @@ const metricValueClasses: Record<ThemeColor, string> = {
 function CaseStudies({ region }: { region: Region }) {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [drawerStudy, setDrawerStudy] = useState<CaseStudy | null>(null);
+  const [closingCardId, setClosingCardId] = useState<string | null>(null);
   const [canScroll, setCanScroll] = useState({ left: false, right: false });
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -193,14 +194,13 @@ function CaseStudies({ region }: { region: Region }) {
   const animationRef = useRef<number>(0);
 
   const smoothScrollTo = useCallback(
-    (target: number) => {
+    (target: number, duration = 250) => {
       const el = scrollRef.current;
       if (!el) return;
       cancelAnimationFrame(animationRef.current);
 
       const start = el.scrollLeft;
       const delta = target - start;
-      const duration = 400; // ms
       let startTime: number | null = null;
 
       function step(timestamp: number) {
@@ -238,20 +238,54 @@ function CaseStudies({ region }: { region: Region }) {
     [smoothScrollTo]
   );
 
-  /* ── Touch swipe handlers ────────────────────────────────── */
+  /* ── Touch swipe handlers with snap-to-card ───────────────── */
 
-  const touchRef = useRef<{ startX: number; startScrollLeft: number; startY: number } | null>(null);
+  const touchRef = useRef<{
+    startX: number;
+    startY: number;
+    startScrollLeft: number;
+    prevX: number;
+    prevTime: number;
+    velocity: number;
+  } | null>(null);
   const isDraggingRef = useRef(false);
+
+  /** Snap scrollLeft to the nearest card boundary */
+  const snapToNearestCard = useCallback(
+    (velocity: number) => {
+      const el = scrollRef.current;
+      if (!el) return;
+      const cardWidth = el.firstElementChild?.getBoundingClientRect().width ?? 360;
+      const gap = 24;
+      const step = cardWidth + gap;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+
+      // Apply inertia: project position based on velocity (px/ms → px, damped)
+      const projected = el.scrollLeft + velocity * 150;
+
+      // Snap to nearest card boundary
+      const index = Math.round(projected / step);
+      const target = Math.max(0, Math.min(index * step, maxScroll));
+
+      smoothScrollTo(target, 250);
+    },
+    [smoothScrollTo]
+  );
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
     function onTouchStart(e: TouchEvent) {
+      cancelAnimationFrame(animationRef.current);
+      const now = performance.now();
       touchRef.current = {
         startX: e.touches[0].clientX,
         startY: e.touches[0].clientY,
         startScrollLeft: el!.scrollLeft,
+        prevX: e.touches[0].clientX,
+        prevTime: now,
+        velocity: 0,
       };
       isDraggingRef.current = false;
     }
@@ -260,7 +294,8 @@ function CaseStudies({ region }: { region: Region }) {
       const touch = touchRef.current;
       if (!touch) return;
 
-      const deltaX = touch.startX - e.touches[0].clientX;
+      const currentX = e.touches[0].clientX;
+      const deltaX = touch.startX - currentX;
       const deltaY = touch.startY - e.touches[0].clientY;
 
       // If vertical swipe dominates, bail out and let page scroll
@@ -273,12 +308,28 @@ function CaseStudies({ region }: { region: Region }) {
       isDraggingRef.current = true;
       e.preventDefault();
       el!.scrollLeft = touch.startScrollLeft + deltaX;
+
+      // Track velocity (px/ms)
+      const now = performance.now();
+      const dt = now - touch.prevTime;
+      if (dt > 0) {
+        touch.velocity = (touch.prevX - currentX) / dt;
+      }
+      touch.prevX = currentX;
+      touch.prevTime = now;
     }
 
     function onTouchEnd() {
+      const touch = touchRef.current;
+      const wasDragging = isDraggingRef.current;
       touchRef.current = null;
       isDraggingRef.current = false;
-      updateScrollState();
+
+      if (wasDragging && touch) {
+        snapToNearestCard(touch.velocity);
+      } else {
+        updateScrollState();
+      }
     }
 
     el.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -289,9 +340,16 @@ function CaseStudies({ region }: { region: Region }) {
       el.removeEventListener("touchmove", onTouchMove);
       el.removeEventListener("touchend", onTouchEnd);
     };
-  }, [updateScrollState]);
+  }, [updateScrollState, snapToNearestCard]);
 
-  const closeDrawer = useCallback(() => setDrawerStudy(null), []);
+  const closeDrawer = useCallback(() => {
+    const previousStudy = drawerStudy;
+    setDrawerStudy(null);
+    // Clear closingCardId after animation to let card reappear
+    if (closingCardId) {
+      setTimeout(() => setClosingCardId(null), 300);
+    }
+  }, [closingCardId]);
 
   return (
     <MotionSection id="case-studies" variant="muted">
@@ -383,13 +441,20 @@ function CaseStudies({ region }: { region: Region }) {
                   layout
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
+                  exit={
+                    closingCardId === study.id
+                      ? { opacity: 0, scale: 0.9, transition: { duration: 0.15 } }
+                      : undefined
+                  }
                   transition={{ type: "spring", stiffness: 100, damping: 20 }}
                   className="w-[320px] flex-shrink-0 sm:w-[360px]"
                 >
                   <button
                     type="button"
-                    onClick={() => setDrawerStudy(study)}
+                    onClick={() => {
+                      setClosingCardId(study.id);
+                      setDrawerStudy(study);
+                    }}
                     className="block w-full text-left"
                   >
                     <BorderGlow className="h-full">

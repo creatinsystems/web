@@ -111,6 +111,10 @@
     @apply font-sans;
     scroll-behavior: smooth;
     scroll-padding-top: 3.5rem;
+    overscroll-behavior-x: none;
+  }
+  body {
+    overscroll-behavior-x: none;
   }
   h1,
   h2,

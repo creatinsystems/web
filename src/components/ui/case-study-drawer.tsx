@@ -1,9 +1,9 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 const { Root, Portal, Backdrop, Popup, Close } = Dialog;
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls, type PanInfo } from "framer-motion";
 import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -61,45 +61,11 @@ function useIsDesktop() {
   return useSyncExternalStore(subscribeDesktop, getDesktopSnapshot, getDesktopServerSnapshot);
 }
 
-/* ── Drawer content (shared between desktop & mobile) ────── */
+/* ── Shared body content (used by both desktop & mobile) ──── */
 
-function DrawerContent({
-  study,
-  theme,
-  iconTheme,
-  onClose,
-}: {
-  study: CaseStudy;
-  theme: string;
-  iconTheme: string;
-  onClose: () => void;
-}) {
-  const Icon = study.icon;
-
+function DrawerBody({ study, onClose }: { study: CaseStudy; onClose: () => void }) {
   return (
-    <div className="flex h-full flex-col overflow-y-auto">
-      {/* Themed header */}
-      <div
-        className={cn(
-          "flex items-center gap-3 border-b border-border/40 bg-gradient-to-r p-6",
-          theme
-        )}
-      >
-        <Icon className={cn("size-5", iconTheme)} />
-        <span className="text-sm font-medium text-white/90">{study.category}</span>
-        <Close
-          render={
-            <button
-              type="button"
-              className="ml-auto rounded-md p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-              aria-label="Close"
-            >
-              <XIcon className="size-5" />
-            </button>
-          }
-        />
-      </div>
-
+    <>
       {/* Body */}
       <div className="flex-1 space-y-6 p-6">
         <div>
@@ -158,7 +124,136 @@ function DrawerContent({
           <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
+    </>
+  );
+}
+
+/* ── Desktop drawer content ───────────────────────────────── */
+
+function DesktopDrawerContent({
+  study,
+  theme,
+  iconTheme,
+  onClose,
+}: {
+  study: CaseStudy;
+  theme: string;
+  iconTheme: string;
+  onClose: () => void;
+}) {
+  const Icon = study.icon;
+
+  return (
+    <div className="flex h-full flex-col overflow-y-auto">
+      {/* Themed header */}
+      <div
+        className={cn(
+          "flex items-center gap-3 border-b border-border/40 bg-gradient-to-r p-6",
+          theme
+        )}
+      >
+        <Icon className={cn("size-5", iconTheme)} />
+        <span className="text-sm font-medium text-white/90">{study.category}</span>
+        <Close
+          render={
+            <button
+              type="button"
+              className="ml-auto rounded-md p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+              aria-label="Close"
+            >
+              <XIcon className="size-5" />
+            </button>
+          }
+        />
+      </div>
+
+      <DrawerBody study={study} onClose={onClose} />
     </div>
+  );
+}
+
+/* ── Mobile bottom sheet with swipe-down-to-dismiss ── */
+
+function MobileSheet({
+  study,
+  theme,
+  iconTheme,
+  onClose,
+}: {
+  study: CaseStudy;
+  theme: string;
+  iconTheme: string;
+  onClose: () => void;
+}) {
+  const Icon = study.icon;
+  const controls = useDragControls();
+
+  function handleDragEnd(_: unknown, info: PanInfo) {
+    // Swipe down past threshold or fast flick → dismiss
+    if (info.offset.y > 120 || info.velocity.y > 500) {
+      onClose();
+    }
+  }
+
+  return (
+    <Popup
+      render={
+        <motion.div
+          drag="y"
+          dragControls={controls}
+          dragListener={false}
+          dragConstraints={{ top: 0, bottom: 0 }}
+          dragElastic={{ top: 0, bottom: 0.3 }}
+          dragSnapToOrigin
+          onDragEnd={handleDragEnd}
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          exit={{ y: "100%" }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="fixed inset-0 z-50 flex flex-col bg-background"
+        >
+          {/* Sticky header — drag handle for the whole sheet */}
+          <div
+            onPointerDown={(e) => controls.start(e)}
+            className={cn(
+              "sticky top-0 z-10 flex cursor-grab touch-none flex-col items-center border-b border-border/40 bg-gradient-to-r px-6 pt-3 active:cursor-grabbing",
+              theme
+            )}
+          >
+            {/* Drag hint pill */}
+            <div className="mb-3 h-1 w-8 rounded-full bg-white/30" />
+
+            {/* Header content */}
+            <div className="flex w-full items-center gap-3 pb-4">
+              <Icon className={cn("size-5", iconTheme)} />
+              <span className="text-sm font-medium text-white/90">{study.category}</span>
+              <Close
+                render={
+                  <button
+                    type="button"
+                    className="ml-auto rounded-md p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                    aria-label="Close"
+                  >
+                    <XIcon className="size-5" />
+                  </button>
+                }
+              />
+            </div>
+          </div>
+
+          {/* Scrollable body */}
+          <div
+            className="flex min-h-0 flex-1 flex-col overflow-y-auto"
+            style={{
+              WebkitOverflowScrolling: "touch",
+              overscrollBehavior: "contain",
+            }}
+          >
+            <DrawerBody study={study} onClose={onClose} />
+          </div>
+        </motion.div>
+      }
+    />
   );
 }
 
@@ -171,15 +266,38 @@ interface CaseStudyDrawerProps {
 
 function CaseStudyDrawer({ study, onClose }: CaseStudyDrawerProps) {
   const isDesktop = useIsDesktop();
+  const [exiting, setExiting] = useState(false);
+  const prevStudyRef = useRef<CaseStudy | null>(null);
 
-  const theme = study ? themeClasses[study.themeColor] : "";
-  const iconTheme = study ? iconThemeClasses[study.themeColor] : "";
+  // Snapshot the study so content stays visible during exit animation
+  if (study) {
+    prevStudyRef.current = study;
+  }
+
+  // Detect close transition: study went from non-null → null
+  // setState during render is safe here (React derived-state pattern)
+  if (!study && prevStudyRef.current && !exiting) {
+    setExiting(true);
+  }
+
+  const renderStudy = study ?? prevStudyRef.current;
+  // Keep dialog mounted during exit animation so Portal stays in DOM
+  const dialogOpen = !!study || exiting;
+  const showContent = !!study;
+
+  const theme = renderStudy ? themeClasses[renderStudy.themeColor] : "";
+  const iconTheme = renderStudy ? iconThemeClasses[renderStudy.themeColor] : "";
+
+  function handleExitComplete() {
+    setExiting(false);
+    prevStudyRef.current = null;
+  }
 
   return (
-    <Root open={!!study} onOpenChange={(open: boolean) => !open && onClose()}>
-      <AnimatePresence>
-        {study && (
-          <Portal>
+    <Root open={dialogOpen} onOpenChange={(open: boolean) => !open && onClose()}>
+      <AnimatePresence onExitComplete={handleExitComplete}>
+        {showContent && renderStudy && (
+          <Portal key="case-study-drawer">
             <Backdrop
               render={
                 <motion.div
@@ -204,8 +322,8 @@ function CaseStudyDrawer({ study, onClose }: CaseStudyDrawerProps) {
                     className="fixed left-1/2 top-1/2 z-50 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl border border-border/40 bg-background shadow-card"
                     style={{ maxHeight: "85vh" }}
                   >
-                    <DrawerContent
-                      study={study}
+                    <DesktopDrawerContent
+                      study={renderStudy}
                       theme={theme}
                       iconTheme={iconTheme}
                       onClose={onClose}
@@ -214,25 +332,12 @@ function CaseStudyDrawer({ study, onClose }: CaseStudyDrawerProps) {
                 }
               />
             ) : (
-              /* Mobile: bottom sheet */
-              <Popup
-                render={
-                  <motion.div
-                    initial={{ y: "100%" }}
-                    animate={{ y: 0 }}
-                    exit={{ y: "100%" }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="fixed inset-x-0 bottom-0 z-50 overflow-hidden rounded-t-2xl border-t border-border/40 bg-background shadow-card"
-                    style={{ maxHeight: "90vh" }}
-                  >
-                    <DrawerContent
-                      study={study}
-                      theme={theme}
-                      iconTheme={iconTheme}
-                      onClose={onClose}
-                    />
-                  </motion.div>
-                }
+              /* Mobile: full-screen sheet with swipe-down-to-dismiss */
+              <MobileSheet
+                study={renderStudy}
+                theme={theme}
+                iconTheme={iconTheme}
+                onClose={onClose}
               />
             )}
           </Portal>
