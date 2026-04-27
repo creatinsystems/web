@@ -77,8 +77,10 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true },
   },
+  verification: {
+    google: "0XzO5CM2tSeAMXJtEir17AUTMMybCCvTSXiwjiRbCH0",
+  },
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
