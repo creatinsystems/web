@@ -8,6 +8,7 @@ import { MotionProvider } from "@/components/layout/motion-provider";
 import { RegionBadge } from "@/components/layout/region-badge";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { GoogleTagManager } from "@next/third-parties/google";
 import "./globals.css";
 
 const satoshi = localFont({
@@ -83,9 +84,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || "";
+
   return (
     <html lang="en" className={`${satoshi.variable} ${geistMono.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col overflow-x-hidden">
+        {gtmId && <GoogleTagManager gtmId={gtmId} />}
         <MotionProvider>
           <a
             href="#main-content"
