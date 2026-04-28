@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
@@ -9,6 +9,7 @@ import { RegionBadge } from "@/components/layout/region-badge";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { GoogleTagManager } from "@next/third-parties/google";
+import { HREFLANG_ALTERNATES, getRegion, getSiteOrigin } from "@/lib/region";
 import "./globals.css";
 
 const satoshi = localFont({
@@ -33,54 +34,66 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = "https://creatinsystems.com";
-
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "Creatin Systems — High-Velocity Cloud Engineering",
-    template: "%s | Creatin Systems",
-  },
-  description:
-    "Cloud-native infrastructure and consumer-grade UI for modern product teams. Get a free technical audit of your system.",
-  keywords: [
-    "cloud engineering",
-    "cloud-native",
-    "infrastructure",
-    "DevOps",
-    "Kubernetes",
-    "UI/UX",
-    "software consultancy",
-  ],
-  authors: [{ name: "Creatin Systems" }],
-  creator: "Creatin Systems",
-  icons: {
-    icon: "/icon.svg",
-    apple: "/apple-icon",
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: siteUrl,
-    siteName: "Creatin Systems",
-    title: "Creatin Systems — High-Velocity Cloud Engineering",
-    description:
-      "Cloud-native infrastructure and consumer-grade UI for modern product teams. Get a free technical audit.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Creatin Systems — High-Velocity Cloud Engineering",
-    description: "Cloud-native infrastructure and consumer-grade UI for modern product teams.",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true },
-  },
-  verification: {
-    google: "0XzO5CM2tSeAMXJtEir17AUTMMybCCvTSXiwjiRbCH0",
-  },
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
+  colorScheme: "dark",
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const region = await getRegion();
+  const siteUrl = getSiteOrigin(region);
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: "Creatin Systems — High-Velocity Cloud Engineering",
+      template: "%s | Creatin Systems",
+    },
+    description:
+      "Cloud-native infrastructure and consumer-grade UI for modern product teams. Get a free technical audit of your system.",
+    keywords: [
+      "cloud engineering",
+      "cloud-native",
+      "infrastructure",
+      "DevOps",
+      "Kubernetes",
+      "UI/UX",
+      "software consultancy",
+    ],
+    authors: [{ name: "Creatin Systems" }],
+    creator: "Creatin Systems",
+    icons: {
+      icon: "/icon.svg",
+      apple: "/apple-icon",
+    },
+    alternates: {
+      canonical: "/",
+      languages: HREFLANG_ALTERNATES,
+    },
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: siteUrl,
+      siteName: "Creatin Systems",
+      title: "Creatin Systems — High-Velocity Cloud Engineering",
+      description:
+        "Cloud-native infrastructure and consumer-grade UI for modern product teams. Get a free technical audit.",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Creatin Systems — High-Velocity Cloud Engineering",
+      description: "Cloud-native infrastructure and consumer-grade UI for modern product teams.",
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    },
+    verification: {
+      google: "0XzO5CM2tSeAMXJtEir17AUTMMybCCvTSXiwjiRbCH0",
+    },
+  };
+}
 export default function RootLayout({
   children,
 }: Readonly<{
